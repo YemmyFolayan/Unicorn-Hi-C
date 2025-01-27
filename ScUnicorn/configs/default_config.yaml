@@ -1,0 +1,37 @@
+# configs/default_config.yaml
+"""
+Default configuration file for the ScUnicorn project.
+Centralizes hyperparameters and settings for training, evaluation, and inference.
+"""
+
+# General settings
+device: "cuda"  # Options: "cuda" or "cpu"
+
+# Model parameters
+model:
+  kernel_size: 3
+  scale_factor: 2
+  input_dim: 8192  # Example: 128x64
+  output_dim: 512
+
+# Training parameters
+training:
+  batch_size: 8
+  epochs: 10
+  learning_rate: 0.001
+  checkpoint_dir: "checkpoints"
+
+# Evaluation parameters
+evaluation:
+  batch_size: 8
+  checkpoint_path: "checkpoints/scunicorn_epoch_10.pth"
+
+# Inference parameters
+inference:
+  lr_file: "data/test_lr.npy"
+  output_file: "data/generated_hr.npy"
+
+# Logging settings
+logging:
+  log_dir: "logs"
+  log_name: "scunicorn"

@@ -1,0 +1,8 @@
+# requirements.txt
+# Python dependencies for ScUnicorn
+
+torch>=1.10
+numpy
+scikit-image
+matplotlib
+pyyaml
