@@ -1,4 +1,4 @@
-# 3DUnicorn: For 3D Genome Structure Reconstruction
+# 3DUnicorn: 3D Genome Structure Reconstruction
 3DUnicorn enhances 3D genome reconstruction from single-cell Hi-C data using blind super-resolution and optimization for accurate, high-resolution chromatin modeling.
 
 ---
