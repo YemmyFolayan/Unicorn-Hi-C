@@ -1,0 +1,3 @@
+Input file: input/gm12878_hic/chr13_10kb_gm12878_list_80mb_90mb.txt
+Convert factor: 1.0
+Learning rate: 1.0

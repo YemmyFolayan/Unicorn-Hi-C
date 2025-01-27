@@ -1,0 +1,7 @@
+Input file: input/zssr_50kb/matrix_chr3_x4_50kb_tuple.txt
+Convert factor: 0.5
+Learning rate: 1.0
+RMSE: 125.15907527742465
+Spearman correlation IFs vs. Reconstructed Dist: -0.7624209765181137
+Spearman correlation WishDist vs. Reconstructed Dist: 0.7624209765181138
+Pearson correlation WishDist vs. Reconstructed Dist: 0.7139397996159402

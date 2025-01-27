@@ -1,0 +1,7 @@
+Input file: input/Matrix/mouse_chrX_500kb_formatted.txt
+Convert factor: 0.6
+Learning rate: 1.0
+AVG RMSE: 100.51716602936592
+AVG Spearman correlation IFs vs. Reconstructed Dist: NaN
+AVG Spearman correlation WishDist vs. Reconstructed Dist: NaN
+AVG Pearson correlation WishDist vs. Reconstructed Dist: NaN

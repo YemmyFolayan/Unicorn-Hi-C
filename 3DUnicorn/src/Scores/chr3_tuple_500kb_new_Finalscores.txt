@@ -1,0 +1,2 @@
+# CONVERT_FACTOR	Structure Number	Spearman Correlation
+0.500000 1.000000 0.730991
