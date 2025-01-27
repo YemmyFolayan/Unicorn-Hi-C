@@ -2,17 +2,21 @@
 Unicorn: Enhancing Single-Cell Hi-C Data with Blind Super-Resolution for 3D Genome Structure Reconstruction
 
 **3DUnicorn**
+
 **1. Content of Folders:**
+
 	•	examples: Contains example input data.
 	•	src: Python source code for the 3DUnicorn algorithm, including utilities for input processing, distance matrix conversion, structure optimization and results in Scores folder.
 
 **2. Input Matrix File Format:**
+
    3DUnicorn supports input formats for Hi-C data:
    	1.	Tuple Input Format (Preferred):
     A Hi-C contact file where each line contains three numbers, separated by spaces:
   	•	position_1 position_2 interaction_frequencies
 
 **3. Usage:**
+
    3.1 Python:
    To run the Python version of 3DUnicorn, follow these steps:
      	1.	Open the command line in the src directory of the project.
@@ -39,6 +43,7 @@ Unicorn: Enhancing Single-Cell Hi-C Data with Blind Super-Resolution for 3D Geno
   Refer to the examples/ folder for sample input files.
 
 **4. Output:**
+
    	1.	*.pdb:
   	•	This file contains the 3D reconstructed genome structure, which can be visualized using tools such as PyMOL, Chimera, or GenomeFlow.
   	2.	*_Finalscores.txt:
