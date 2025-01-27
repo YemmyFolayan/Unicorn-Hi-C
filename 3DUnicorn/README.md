@@ -41,11 +41,9 @@ Define the following parameters in the parameters.txt file:
 	•	NUM: Number of models to generate.
 	•	OUTPUT_FOLDER: Path to save results.
 	•	INPUT_FILE: Path to the Hi-C contact file (tuple or square matrix format).
-	•	CONVERT_FACTOR: Conv
-distance = 1 / (IF) ^ factor
+	•	CONVERT_FACTOR: distance = 1 / (IF) ^ factor		
 	•	The program searches for factor within [0.1, 2.0] (default step size: 0.1) if not specified.
-
-	•	CHROMOSOME_LENGTH: For multiple chromosomes, provide a comma-separated list of bead counts per chromosome (align with input data). Omit for single chromosomes.
+	•	CHROMOSOME_LENGTH: For multiple chromosomes, provide a comma-separated list of bead counts per chromosome (align with input 		data). Omit for single chromosomes.
 	•	VERBOSE: true or false for controlling gradient output during optimization.
 	•	LEARNING_RATE: Adjust the optimization step size (max recommended: 1).
 	•	MAX_ITERATION: Maximum optimization iterations (may converge earlier).
@@ -55,21 +53,11 @@ distance = 1 / (IF) ^ factor
 
 Refer to the examples/ folder for sample inputs and configurations.
 
-## 📤 Output  
+📤 Output
 
-3DUnicorn generates the following output files:  
+3DUnicorn generates the following files:
+	•	*.pdb: 3D reconstructed genome structure. Visualize using tools like PyMOL, Chimera, or GenomeFlow.
+	•	*_Finalscores.txt: Summarizes the best model generated, including Spearman correlation, Pearson correlation, and other 			key metrics.
+	•	*_pearsoncorr.txt: Lists the Pearson correlation values for all generated models.
+	•	*_rmsd.txt: Contains the Root Mean Square Deviation (RMSD) values for all generated models.
 
-- **`*.pdb`**:  
-  3D reconstructed genome structure. Visualize using tools like PyMOL, Chimera, or GenomeFlow.  
-
-- **`*_Finalscores.txt`**:  
-  Summarizes the best model, including:  
-  - Spearman correlation  
-  - Pearson correlation  
-  - Other key metrics  
-
-- **`*_pearsoncorr.txt`**:  
-  Lists Pearson correlation values for all generated models.  
-
-- **`*_rmsd.txt`**:  
-  Contains Root Mean Square Deviation (RMSD) values for all generated models.  
