@@ -13,7 +13,7 @@
   - Distance matrix conversion  
   - Structure optimization  
   - Output generation  
-- **`Scores/`**: Directory for saving results, including `.pdb` files and evaluation metrics.  
+- **`Scores/`**: Directory for saving results, including `.pdb` files.  
 
 ---
 
@@ -55,7 +55,7 @@ distance = 1 / (IF) ^ factor
 
 Refer to the examples/ folder for sample inputs and configurations.
 
-📤 Output
+##**📤 Output**
 
 3DUnicorn generates the following files:
 	•	*.pdb:
