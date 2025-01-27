@@ -41,11 +41,9 @@ Define the following parameters in the parameters.txt file:
 	•	INPUT_FILE: Path to the Hi-C contact file (tuple or square matrix format).
 	•	CONVERT_FACTOR: distance = 1 / (IF) ^ factor		
 	•	The program searches for factor within [0.1, 2.0] (default step size: 0.1) if not specified.
-	•	CHROMOSOME_LENGTH: For multiple chromosomes, provide a comma-separated list of bead counts per chromosome (align with input 		data). Omit for single chromosomes.
 	•	VERBOSE: true or false for controlling gradient output during optimization.
 	•	LEARNING_RATE: Adjust the optimization step size (max recommended: 1).
 	•	MAX_ITERATION: Maximum optimization iterations (may converge earlier).
-
 
 🔍 Example
 
