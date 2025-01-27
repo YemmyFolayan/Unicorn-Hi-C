@@ -1,7 +1,7 @@
 # Unicorn: Enhancing Single-Cell Hi-C Data with Blind Super-Resolution for 3D Genome Structure Reconstruction
 Unicorn: Enhancing Single-Cell Hi-C Data with Blind Super-Resolution for 3D Genome Structure Reconstruction
 
-#3DUnicorn
+**3DUnicorn**
 1. Content of Folders:
 	•	examples: Contains example input data.
 	•	src: Python source code for the 3DUnicorn algorithm, including utilities for input processing, distance matrix conversion, structure optimization and results in Scores folder.
