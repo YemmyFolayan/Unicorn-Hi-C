@@ -1,7 +1,0 @@
-Input file: input/zssr/matrix_chr11_x4_tuple_new.txt
-Convert factor: 0.5
-Learning rate: 1.0
-AVG RMSE: 133.2160210104836
-AVG Spearman correlation IFs vs. Reconstructed Dist: -0.7422219892369074
-AVG Spearman correlation WishDist vs. Reconstructed Dist: 0.7422219892369072
-AVG Pearson correlation WishDist vs. Reconstructed Dist: 0.6934384284619673

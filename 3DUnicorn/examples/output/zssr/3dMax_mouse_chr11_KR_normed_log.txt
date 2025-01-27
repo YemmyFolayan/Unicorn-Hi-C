@@ -1,7 +1,0 @@
-Input file: input/zssr/3dMax_mouse_chr11_KR_normed.txt
-Convert factor: 0.6
-Learning rate: 1.0
-AVG RMSE: 150.70118790799216
-AVG Spearman correlation IFs vs. Reconstructed Dist: -0.7483866229378988
-AVG Spearman correlation WishDist vs. Reconstructed Dist: 0.7483866229378993
-AVG Pearson correlation WishDist vs. Reconstructed Dist: 0.6998900746786175

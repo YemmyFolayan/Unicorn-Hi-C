@@ -1,7 +1,0 @@
-Input file: input/zssr/3DMax_tuple_KR_normed.txt
-Convert factor: 0.6
-Learning rate: 1.0
-AVG RMSE: 131.18507218451504
-AVG Spearman correlation IFs vs. Reconstructed Dist: -0.6573807680811055
-AVG Spearman correlation WishDist vs. Reconstructed Dist: 0.6573807680811059
-AVG Pearson correlation WishDist vs. Reconstructed Dist: 0.6544742434864398

@@ -1,7 +1,0 @@
-Input file: input/Matrix/new_enhanced_tuple.txt
-Convert factor: 0.6
-Learning rate: 1.0
-AVG RMSE: 124.48730318526106
-AVG Spearman correlation IFs vs. Reconstructed Dist: -0.6745467353938435
-AVG Spearman correlation WishDist vs. Reconstructed Dist: 0.6745467353938435
-AVG Pearson correlation WishDist vs. Reconstructed Dist: 0.6358988198676429

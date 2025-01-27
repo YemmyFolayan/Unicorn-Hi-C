@@ -1,3 +1,0 @@
-Input file: input/gm06990_hic/IFList_Chr_19_1mb.txt
-Convert factor: 0.6
-Learning rate: 1.0

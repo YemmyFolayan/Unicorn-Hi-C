@@ -1,7 +1,0 @@
-Input file: input/Matrix/shifted_matrix2_tuples.txt
-Convert factor: 0.6
-Learning rate: 1.0
-RMSE: 95.49749388748961
-Spearman correlation IFs vs. Reconstructed Dist: -0.09996114653864206
-Spearman correlation WishDist vs. Reconstructed Dist: 0.09996114653864206
-Pearson correlation WishDist vs. Reconstructed Dist: 0.10644768036263455

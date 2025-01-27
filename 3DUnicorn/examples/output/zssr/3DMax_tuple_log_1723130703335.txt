@@ -1,7 +1,0 @@
-Input file: input/zssr/3DMax_tuple.txt
-Convert factor: 0.6
-Learning rate: 1.0
-RMSE: 125.69761640956287
-Spearman correlation IFs vs. Reconstructed Dist: -0.6811058016716653
-Spearman correlation WishDist vs. Reconstructed Dist: 0.6811058016716653
-Pearson correlation WishDist vs. Reconstructed Dist: 0.6415630608935445
