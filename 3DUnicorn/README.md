@@ -55,17 +55,21 @@ distance = 1 / (IF) ^ factor
 
 Refer to the examples/ folder for sample inputs and configurations.
 
-##**📤 Output**
+## 📤 Output  
 
-3DUnicorn generates the following files:
-	•	*.pdb:
-3D reconstructed genome structure. Visualize using tools like PyMOL, Chimera, or GenomeFlow.
-	•	*_Finalscores.txt:
-Summarizes the best model, including:
-	•	Spearman correlation
-	•	Pearson correlation
-	•	Other key metrics
-	•	*_pearsoncorr.txt:
-Lists Pearson correlation values for all models.
-	•	*_rmsd.txt:
-Contains Root Mean Square Deviation (RMSD) values for all models.
+3DUnicorn generates the following output files:  
+
+- **`*.pdb`**:  
+  3D reconstructed genome structure. Visualize using tools like PyMOL, Chimera, or GenomeFlow.  
+
+- **`*_Finalscores.txt`**:  
+  Summarizes the best model, including:  
+  - Spearman correlation  
+  - Pearson correlation  
+  - Other key metrics  
+
+- **`*_pearsoncorr.txt`**:  
+  Lists Pearson correlation values for all generated models.  
+
+- **`*_rmsd.txt`**:  
+  Contains Root Mean Square Deviation (RMSD) values for all generated models.  
