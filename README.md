@@ -19,7 +19,7 @@ Unicorn: Enhancing Single-Cell Hi-C Data with Blind Super-Resolution for 3D Geno
 
 ## 3. Usage:
 
-## 3.1 Python:
+### 3.1 Python:
 
 	To run the Python version of 3DUnicorn, follow these steps:
 	
@@ -34,9 +34,9 @@ Unicorn: Enhancing Single-Cell Hi-C Data with Blind Super-Resolution for 3D Geno
 		•	OUTPUT_FOLDER: Path to the output directory where results will be stored.
 		•	INPUT_FILE: Path to the Hi-C contact file in either tuple format or square matrix format.
 		•	CONVERT_FACTOR: The factor used to convert interaction frequencies (IF) to distances, computed as:
-	[
-	\text{distance} = \frac{1}{(\text{IF})^{\text{factor}}}
-	]
+		[
+		\text{distance} = \frac{1}{(\text{IF})^{\text{factor}}}
+		]
 	If not specified, the program searches for it in the range [0.1, 2.0] with a step size of 0.1.
 		•	CHROMOSOME_LENGTH: For datasets containing multiple chromosomes, specify the number of points (or beads) per 				chromosome in a comma-separated list. This must align with the input data. For single chromosomes, omit this 				parameter.
 		•	VERBOSE: Set to true or false to control the output of gradient values during optimization.
