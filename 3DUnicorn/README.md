@@ -1,64 +1,71 @@
-# 3DUnicorn: 3D Genome Structure Reconstruction
+# 3DUnicorn: For 3D Genome Structure Reconstruction
 3DUnicorn enhances 3D genome reconstruction from single-cell Hi-C data using blind super-resolution and optimization for accurate, high-resolution chromatin modeling.
 
-**3DUnicorn**
+**3DUnicorn**  
 
-## 1. Content of Folders:
+---
 
-- **examples**: Contains example input data and configurations for running the 3DUnicorn algorithm.
-- **src**: Python source code for the 3DUnicorn algorithm, including utilities for input processing, distance matrix conversion, structure optimization, and output generation.
-- **Scores**: Output folder where the results are saved, including `.pdb` files and evaluation metrics.
+## 📂 Folder Structure  
 
-## 2. Input Matrix File Format:
+- **`examples/`**: Example input data and configurations for running 3DUnicorn.  
+- **`src/`**: Python source code, including utilities for:  
+  - Input processing  
+  - Distance matrix conversion  
+  - Structure optimization  
+  - Output generation  
+- **`Scores/`**: Directory for saving results, including `.pdb` files and evaluation metrics.  
 
-3DUnicorn supports input formats for Hi-C data:
+---
 
-1. **Tuple Input Format**:  
-   A Hi-C contact file where each line contains three numbers separated by spaces:
-   position_1 position_2 interaction_frequencies
+## 📊 Input File Format  
 
-## 3. Usage:
+### 1️⃣ **Tuple Input Format**  
+A Hi-C contact file with rows in the following format:  
+`position_1 position_2 interaction_frequencies`  
 
-### 3.1 Python:
+---
 
-	To run the Python version of 3DUnicorn, follow these steps:
-	
-	1. Open the command line in the `src` directory of the project.
-	2. Run the Python script using the following command:
-		python3 main.py --parameters parameters.txt
+## 🚀 Usage  
 
-  	Configuration (parameters.txt):
+### 🐍 **Running 3DUnicorn (Python)**  
 
-	Parameters are configured in the parameters.txt file as follows:
-		•	NUM: Number of models to generate.
-		•	OUTPUT_FOLDER: Path to the output directory where results will be stored.
-		•	INPUT_FILE: Path to the Hi-C contact file in either tuple format or square matrix format.
-		•	CONVERT_FACTOR: The factor used to convert interaction frequencies (IF) to distances, computed as:
-		[
-		\text{distance} = \frac{1}{(\text{IF})^{\text{factor}}}
-		]
-	If not specified, the program searches for it in the range [0.1, 2.0] with a step size of 0.1.
-		•	CHROMOSOME_LENGTH: For datasets containing multiple chromosomes, specify the number of points (or beads) per 				chromosome in a comma-separated list. This must align with the input data. For single chromosomes, omit this 				parameter.
-		•	VERBOSE: Set to true or false to control the output of gradient values during optimization.
-		•	LEARNING_RATE: The learning rate for optimization. Increase this value to reduce runtime (maximum recommended value: 			1).
-		•	MAX_ITERATION: Maximum number of optimization iterations. The process may converge before reaching this limit.
-	
-	Example:
-	
-	Refer to the examples/ folder for sample input files and configurations.
+1. Open the command line in the `src/` directory.  
+2. Execute the following command:  
 
-## 4. Output
+```bash
+python3 main.py --parameters parameters.txt
 
-3DUnicorn generates the following output files:
+🔧 Configuration (parameters.txt)
 
-	- *.pdb:
-	Contains the 3D reconstructed genome structure. This file can be visualized using tools such as PyMOL, Chimera, or 			GenomeFlow.
- 
-	- *_Finalscores.txt:
-	Summarizes the best model generated, including Spearman correlation, Pearson correlation, and other key metrics.
- 
-	- *_pearsoncorr.txt:
-	Lists the Pearson correlation values for all generated models.
- 
-	- *_rmsd.txt:
-	Contains the Root Mean Square Deviation (RMSD) values for all generated models.
+Define the following parameters in the parameters.txt file:
+	•	NUM: Number of models to generate.
+	•	OUTPUT_FOLDER: Path to save results.
+	•	INPUT_FILE: Path to the Hi-C contact file (tuple or square matrix format).
+	•	CONVERT_FACTOR: Conv
+distance = 1 / (IF) ^ factor
+	•	The program searches for factor within [0.1, 2.0] (default step size: 0.1) if not specified.
+
+	•	CHROMOSOME_LENGTH: For multiple chromosomes, provide a comma-separated list of bead counts per chromosome (align with input data). Omit for single chromosomes.
+	•	VERBOSE: true or false for controlling gradient output during optimization.
+	•	LEARNING_RATE: Adjust the optimization step size (max recommended: 1).
+	•	MAX_ITERATION: Maximum optimization iterations (may converge earlier).
+
+
+🔍 Example
+
+Refer to the examples/ folder for sample inputs and configurations.
+
+📤 Output
+
+3DUnicorn generates the following files:
+	•	*.pdb:
+3D reconstructed genome structure. Visualize using tools like PyMOL, Chimera, or GenomeFlow.
+	•	*_Finalscores.txt:
+Summarizes the best model, including:
+	•	Spearman correlation
+	•	Pearson correlation
+	•	Other key metrics
+	•	*_pearsoncorr.txt:
+Lists Pearson correlation values for all models.
+	•	*_rmsd.txt:
+Contains Root Mean Square Deviation (RMSD) values for all models.
