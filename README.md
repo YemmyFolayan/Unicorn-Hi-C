@@ -9,8 +9,6 @@ Unicorn: Enhancing Single-Cell Hi-C Data with Blind Super-Resolution for 3D Geno
 - **src**: Python source code for the 3DUnicorn algorithm, including utilities for input processing, distance matrix conversion, structure optimization, and output generation.
 - **Scores**: Output folder where the results are saved, including `.pdb` files and evaluation metrics.
 
----
-
 ## 2. Input Matrix File Format:
 
 3DUnicorn supports input formats for Hi-C data:
@@ -21,7 +19,7 @@ Unicorn: Enhancing Single-Cell Hi-C Data with Blind Super-Resolution for 3D Geno
 
 ## 3. Usage:
 
-### 3.1 Python:
+## 3.1 Python:
 
 	To run the Python version of 3DUnicorn, follow these steps:
 	
