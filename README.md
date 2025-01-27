@@ -50,11 +50,11 @@ Unicorn: Enhancing Single-Cell Hi-C Data with Blind Super-Resolution for 3D Geno
 ## 4. Output
 
 3DUnicorn generates the following output files:
-	1.	*.pdb:
-		Contains the 3D reconstructed genome structure. This file can be visualized using tools such as PyMOL, Chimera, or 			GenomeFlow.
-	2.	*_Finalscores.txt:
-		Summarizes the best model generated, including Spearman correlation, Pearson correlation, and other key metrics.
-	3.	*_pearsoncorr.txt:
-		Lists the Pearson correlation values for all generated models.
-	4.	*_rmsd.txt:
-		Contains the Root Mean Square Deviation (RMSD) values for all generated models.
+	- *.pdb:
+	Contains the 3D reconstructed genome structure. This file can be visualized using tools such as PyMOL, Chimera, or 			GenomeFlow.
+	- *_Finalscores.txt:
+	Summarizes the best model generated, including Spearman correlation, Pearson correlation, and other key metrics.
+	- *_pearsoncorr.txt:
+	Lists the Pearson correlation values for all generated models.
+	- *_rmsd.txt:
+	Contains the Root Mean Square Deviation (RMSD) values for all generated models.
