@@ -141,14 +141,21 @@ bash inference.sh
 
 ---
 
-## Pre-Trained Models
-- A pre-trained model is available under `trained_model/`.
+## Pre-Trained Models & Data Availability
+
+### Citation
+Chandrashekar, M. B., Menon, R., Olowofila, S., & Oluwadare, O. (2025). Unicorn: Enhancing Single-Cell Hi-C Data with Blind Super-Resolution for 3D Genome Structure Reconstruction [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14750810
+
+- The trained model is available on [Zenodo](https://zenodo.org/record/14750810).
+- The dataset used for training is also available on [Zenodo](https://zenodo.org/record/14750810).
 
 ---
 
 ## Contributors
-- **Your Name**
-- **Collaborators**
+- M. B. Chandrashekar
+- R. Menon
+- S. Olowofila
+- O. Oluwadare
 
 ---
 
