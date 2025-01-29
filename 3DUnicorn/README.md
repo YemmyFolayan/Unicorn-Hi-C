@@ -48,7 +48,7 @@ Define the following parameters in the parameters.txt file:
 
 Refer to the examples/ folder for sample inputs and configurations.
 
-**📤 Output**
+📤 Output
 3DUnicorn generates the following files:
 	• *.pdb: 3D reconstructed genome structure. Visualize using tools like PyMOL, Chimera, or GenomeFlow.
 	• *_Finalscores.txt: Summarizes the best model generated, including Spearman correlation, Pearson correlation, and other 		   key metrics.
