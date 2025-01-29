@@ -157,7 +157,4 @@ Chandrashekar, M. B., Menon, R., Olowofila, S., & Oluwadare, O. (2025). Unicorn:
 - S. Olowofila
 - O. Oluwadare
 
----
 
-## License
-This project is licensed under the MIT License. See the LICENSE file for details.
