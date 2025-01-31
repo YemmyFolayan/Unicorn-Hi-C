@@ -9,7 +9,7 @@ UniCorn integrates two powerful subsystems: **ScUnicorn** for super-resolution e
 ---
 ## Documentation
 
-Please see the wiki for an extensive documentation.
+Please see the [wiki](https://github.com/OluwadareLab/Unicorn/wiki) for an extensive documentation.
 
 
 ---
