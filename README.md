@@ -4,9 +4,15 @@ UniCorn integrates two powerful subsystems: **ScUnicorn** for super-resolution e
 
 ---
 
+[OluwadareLab, University of Colorado, Colorado Springs](https://uccs-bioinformatics.com/)
 
 ---
+## Documentation
 
+Please see the wiki for an extensive documentation.
+
+
+---
 ### Citation
 Chandrashekar, M. B., Menon, R., Olowofila, S., & Oluwadare, O. (2025). Unicorn: Enhancing Single-Cell Hi-C Data with Blind Super-Resolution for 3D Genome Structure Reconstruction [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14750810
 
