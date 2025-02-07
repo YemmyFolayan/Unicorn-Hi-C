@@ -1,78 +1,62 @@
+# scripts/generate_hr.py
 """
-Restoration Loop with Estimator and Restorer Modules
-This module defines the iterative process of enhancing Hi-C maps.
+Inference Script for Hi-C Super-Resolution
+Generates high-resolution Hi-C maps from low-resolution inputs.
+Uses a pre-trained ESRGAN model for super-resolution.
 """
+import os
+import argparse
 import torch
-import torch.nn as nn
+import numpy as np
+from PIL import Image
+import torchvision.transforms as transforms
 
-class Estimator(nn.Module):
-    def __init__(self, input_dim=1024, output_dim=512):
-        """
-        Estimator module to refine the degradation kernel.
+# Load pre-trained ESRGAN model
+model_esrgan = torch.hub.load('facebookresearch/pytorch_GAN_zoo', 'ESRGAN', pretrained=True)
+model_esrgan.eval()
 
-        Parameters:
-        - input_dim (int): Dimensionality of the input features.
-        - output_dim (int): Dimensionality of the refined kernel output.
-        """
-        super(Estimator, self).__init__()
-        self.fc = nn.Linear(input_dim, output_dim)
+def load_lr_data(lr_file):
+    """Load low-resolution data from a .png file."""
+    if lr_file.endswith(".png"):
+        lr_image = Image.open(lr_file).convert("RGB")
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((0.5,), (0.5,))
+        ])
+        lr_tensor = transform(lr_image).unsqueeze(0)  # Add batch dimension
+    else:
+        raise ValueError("Unsupported file format. Use .png")
+    return lr_tensor
 
-    def forward(self, lr_features):
-        """
-        Forward pass for the Estimator module.
+def save_hr_data(hr_tensor, output_file):
+    """Save high-resolution data to a .png file."""
+    hr_image = hr_tensor.squeeze().permute(1, 2, 0).cpu().numpy()
+    hr_image = ((hr_image + 1) / 2 * 255).astype(np.uint8)  # Rescale to 0-255
+    hr_image = Image.fromarray(hr_image)
+    hr_image.save(output_file)
 
-        Parameters:
-        - lr_features (torch.Tensor): Low-resolution feature input.
-
-        Returns:
-        - torch.Tensor: Refined kernel features.
-        """
-        refined_kernel = self.fc(lr_features)
-        return refined_kernel
-
-class Restorer(nn.Module):
-    def __init__(self):
-        """
-        Restorer module to reconstruct HR Hi-C maps from LR inputs.
-        """
-        super(Restorer, self).__init__()
-        self.residual_block = nn.Sequential(
-            nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1),
-            nn.ReLU(),
-            nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
-        )
-
-    def forward(self, lr_data):
-        """
-        Forward pass for the Restorer module.
-
-        Parameters:
-        - lr_data (torch.Tensor): Low-resolution input tensor.
-
-        Returns:
-        - torch.Tensor: Reconstructed high-resolution tensor.
-        """
-        restored_data = self.residual_block(lr_data)
-        return restored_data
+def generate_hr(data_path, output_path):
+    """Generate high-resolution data using ESRGAN."""
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    
+    # Load LR data
+    lr_data = load_lr_data(data_path).to(device)
+    
+    model = model_esrgan.to(device)
+    model.eval()
+    
+    # Generate HR data
+    with torch.no_grad():
+        hr_data = model(lr_data)
+    
+    # Save output
+    save_hr_data(hr_data, output_path)
+    print(f"High-resolution data saved to {output_path}")
 
 if __name__ == "__main__":
-    # Test the Restoration Loop modules
-    print("Testing Restoration Loop modules...")
-
-    # Example LR data and features
-    lr_data = torch.randn(1, 1, 64, 64)  # Batch size = 1, Channels = 1, Height = 64, Width = 64
-    lr_features = torch.randn(1, 1024)  # Example flattened features
-
-    # Initialize Estimator and Restorer
-    estimator = Estimator(input_dim=1024, output_dim=512)
-    restorer = Restorer()
-
-    # Test Estimator
-    refined_kernel = estimator(lr_features)
-    print("Refined Kernel Shape:", refined_kernel.shape)
-
-    # Test Restorer
-    hr_output = restorer(lr_data)
-    print("Restored HR Shape:", hr_output.shape)
-
-    print("Restoration Loop test passed.")
+    parser = argparse.ArgumentParser(description="Generate HR images using ESRGAN.")
+    parser.add_argument("--data_path", type=str, required=True, help="Path to input LR image (.png).")
+    parser.add_argument("--output_path", type=str, required=True, help="Path to save the generated HR image.")
+    
+    args = parser.parse_args()
+    generate_hr(args.data_path, args.output_path)
