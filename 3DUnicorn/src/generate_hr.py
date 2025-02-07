@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
 # Call the second script after inference
 try:
-    subprocess.run(["python3", "/Users/mohanchandru/Documents/SCL_3dMax_ZSSR/3DUnicorn/src/Image_to_hic.py"], check=True)
+    subprocess.run(["python3", "path_to_/Image_to_hic.py"], check=True)
     print("Hi-C contact matrix script executed successfully.")
 
     # Call main.py after Hi-C matrix generation
