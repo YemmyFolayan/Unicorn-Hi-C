@@ -3,9 +3,9 @@ import numpy as np
 import os
 
 # Define static file paths
-image_path = '/Users/mohanchandru/Documents/SCL_3dMax_ZSSR/3dmax_python_new/output/chr11_hr.png'
-hic_output_path = '/Users/mohanchandru/Documents/SCL_3dMax_ZSSR/3DUnicorn/examples/input/chr11_hr_matrix.txt'
-tuple_output_path = '/Users/mohanchandru/Documents/SCL_3dMax_ZSSR/3DUnicorn/examples/input/chr11_hr_matrix_tuple.txt'
+image_path = 'path to generated high resolution png'
+hic_output_path = 'provide path to store matrix file'
+tuple_output_path = 'provide a path to store matrix file in tuple format'
 
 print("connected script is executing")
 # Ensure output directory exists
