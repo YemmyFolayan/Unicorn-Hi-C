@@ -105,7 +105,7 @@ def main_3DUnicorn(params_file):
     # Parse parameters
     parameters = parse_parameters_txt(params_file)
     OUTPUT_FOLDER = parameters.get("OUTPUT_FOLDER")
-    INPUT_FILE = parameters.get("OUTPUT_HIC_PATH")
+    INPUT_FILE = parameters.get("INPUT_PATH")
     smooth_factor = 1e-6
     NEAR_ZERO = 0.00001
     NUM = 1
@@ -187,7 +187,7 @@ def main_pipeline(params_file):
 
     model_path = params['MODEL_PATH']
     data_path = params['DATA_PATH']
-    output_hic_path = params['OUTPUT_HIC_PATH']
+    output_hic_path = params['INPUT_PATH']
 
     model = load_model(model_path)
     lr_image, hic_matrix = preprocess_input(data_path)
@@ -205,5 +205,4 @@ if __name__ == "__main__":
     parser.add_argument('--parameters', required=True, help="Path to parameters.txt")
     args = parser.parse_args()
     main_pipeline(args.parameters)
-
 
