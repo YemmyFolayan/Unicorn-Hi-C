@@ -24,8 +24,7 @@ def initialize_structure_c_style(sequence_length, min_dist=2.0, max_dist=6.0, us
     max_dist_step = 1.0
 
     while len(nodes) < sequence_length and restart_count < global_restart_attempts:
-        print(f"Restarting initialization. Attempt {restart_count + 1}/{global_restart_attempts}")
-        print(f"Current constraints: min_dist={min_dist:.2f}, max_dist={max_dist:.2f}")
+        #print(f"Restarting initialization. Attempt {restart_count + 1}/{global_restart_attempts}")
         nodes = [Node(size_cube // 2, size_cube // 2, size_cube // 2)]  # Start at center
 
         # Sequential placement with adjacency constraints
@@ -33,13 +32,10 @@ def initialize_structure_c_style(sequence_length, min_dist=2.0, max_dist=6.0, us
             candidates = find_candidate_positions(nodes[-1], size_cube, max_dist)
             valid_candidates = [c for c in candidates if is_valid_position(c, nodes, min_dist, max_dist)]
             if valid_candidates:
-                #print("randomly placed")
                 nodes.append(random.choice(valid_candidates))
             else:
-                # Add adjacent constraint to mimic SCL
                 adjacent_node = Node(nodes[-1].x + min_dist, nodes[-1].y, nodes[-1].z)
                 nodes.append(adjacent_node)
-                #print("mimic happened")
 
         if len(nodes) < sequence_length:
             print(f"Failed to place all nodes. Adjusting constraints and restarting...")
@@ -54,9 +50,6 @@ def initialize_structure_c_style(sequence_length, min_dist=2.0, max_dist=6.0, us
 
     # Apply continuity refinement
     coordinates = refine_path_continuity(coordinates)
-
-    # Refine using simulated annealing
-    #coordinates = simulated_annealing(coordinates, min_dist, max_dist)
 
     return scale_coordinates(coordinates, size_cube)
 
