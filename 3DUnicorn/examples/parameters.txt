@@ -1,11 +1,20 @@
 
+
 #number of structures will be generated
+
+# Paths for Super-Resolution and Hi-C Processing
+
+MODEL_PATH = /Users/mohanchandru/Documents/SCL_3dMax_ZSSR/3dmax_python_new/src/mouse_data_model_scunicorn.npz
+
+DATA_PATH = /Users/mohanchandru/Documents/SCL_3dMax_ZSSR/3dmax_python_new/Dataset_Mouse/chr11_500kb/LR/x4/mouse_chr11.png
+
+HIC_OUTPUT_PATH = /Users/mohanchandru/Documents/SCL_3dMax_ZSSR/3DUnicorn/examples/output/chr11_hr_matrix.txt
 
 NUM = 1
 
-OUTPUT_FOLDER = ../Scores
+OUTPUT_FOLDER = /Users/mohanchandru/Documents/SCL_3dMax_ZSSR/3dmax_python_new/examples/output/sample2
 
-INPUT_FILE =../input/chr11_tuple_500kb_new.txt
+TUPLE_PATH = /Users/mohanchandru/Documents/SCL_3dMax_ZSSR/3DUnicorn/examples/output/chr11_hr_matrix_tuple.txt
 
 #factor used to convert IF into distance = 1 / (IF^factor)
 
