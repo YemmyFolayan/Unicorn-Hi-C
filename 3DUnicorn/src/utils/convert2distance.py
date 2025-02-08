@@ -52,13 +52,9 @@ def convert_to_distance(lstCons, CONVERT_FACTOR, seed=42):
                 lstCons[f, 2] = avgAdjIF
         i += 1
     
-    print(f"Added missing adjacent constraints... Total constraints: {len(lstCons)}")
-
     # Step 6: Compute distances and store them in the 4th column
     lstCons = np.hstack([lstCons, np.zeros((lstCons.shape[0], 1))])  # Add 4th column for distance
     lstCons[:, 3] = AVG_DIST / ((lstCons[:, 2] ** CONVERT_FACTOR) * avgDist)
     maxD = np.max(lstCons[:, 3])
-
-    print(f"Max distance is: {maxD}")
 
     return lstCons, maxIF
