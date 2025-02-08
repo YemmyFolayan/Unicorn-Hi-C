@@ -49,44 +49,30 @@ def generate_hr(model_path, data_path):
     return hr_image
 
 
-def convert_image_to_hic(hr_image, hic_output_path, tuple_output_path):
-    print("[INFO] Converting to Hi-C matrix...")
+def convert_image_to_hic(hr_image, tuple_output_path):
+    print("[INFO] Converting HR image to Hi-C matrix in memory...")
     hr_image_array = np.array(hr_image)
     image = cv2.cvtColor(hr_image_array, cv2.COLOR_RGB2BGR)
-    #print(f"Image shape: {image.shape}")
 
     hic_matrix = image[:, :, 0]
     hic_matrix_normalized = hic_matrix / 255.0
-    #print(f"Hi-C contact matrix shape: {hic_matrix_normalized.shape}")
 
-    np.savetxt(hic_output_path, hic_matrix_normalized)
-    #print(f"Hi-C contact matrix saved to {hic_output_path}")
+    # Directly pass the normalized Hi-C matrix to tuple conversion
+    convert_dense_to_tuple_debug(hic_matrix_normalized, tuple_output_path)
 
-    convert_dense_to_tuple_debug(hic_output_path, tuple_output_path)
-
-
-def convert_dense_to_tuple_debug(hic_output_path, tuple_output_path, bin_size=500000):
-    with open(hic_output_path, 'r') as file:
-        lines = file.readlines()
-
+def convert_dense_to_tuple_debug(hic_matrix_normalized, tuple_output_path, bin_size=500000):
     non_zero_found = 0
 
     with open(tuple_output_path, 'w') as out_file:
-        for row_index, line in enumerate(lines):
-            values = line.strip().split()
-            for col_index, value in enumerate(values):
-                try:
-                    frequency = float(value)
-                    if frequency != 0:
-                        position_1 = (row_index + 1) * bin_size
-                        position_2 = (col_index + 1) * bin_size
-                        out_file.write(f"{position_1} {position_2} {frequency}\n")
+        for row_index, row in enumerate(hic_matrix_normalized):
+            for col_index, frequency in enumerate(row):
+                if frequency != 0:
+                    position_1 = (row_index + 1) * bin_size
+                    position_2 = (col_index + 1) * bin_size
+                    out_file.write(f"{position_1} {position_2} {frequency}\n")
 
-                        if non_zero_found < 5:
-                            non_zero_found += 1
-                except ValueError:
-                    print(f"Warning: Could not convert value '{value}' at row {row_index + 1}, col {col_index + 1}")
-
+                    if non_zero_found < 5:
+                        non_zero_found += 1
 
 def main_3DMax(params_file):
     def parse_parameters_txt(params_file):
@@ -103,7 +89,7 @@ def main_3DMax(params_file):
     # Parse parameters
     parameters = parse_parameters_txt(params_file)
     OUTPUT_FOLDER = parameters.get("OUTPUT_FOLDER")
-    INPUT_FILE = parameters.get("TUPLE_PATH")
+    INPUT_FILE = parameters.get("INPUT_PATH")
     smooth_factor = 1e-6
     NEAR_ZERO = 0.00001
     NUM = 1
@@ -185,11 +171,10 @@ def main_pipeline(params_file):
 
     model_path = params['MODEL_PATH']
     data_path = params['DATA_PATH']
-    hic_output_path = params['HIC_OUTPUT_PATH']
-    tuple_output_path = params['TUPLE_PATH']
+    tuple_output_path = params['INPUT_PATH']
 
     hr_image = generate_hr(model_path, data_path)
-    convert_image_to_hic(hr_image, hic_output_path, tuple_output_path)
+    convert_image_to_hic(hr_image, tuple_output_path)
     main_3DMax(params_file)
 
 
