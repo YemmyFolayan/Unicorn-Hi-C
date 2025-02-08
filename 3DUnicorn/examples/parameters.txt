@@ -2,17 +2,15 @@
 
 #number of structures will be generated
 
-# Paths for Super-Resolution and Hi-C Processing
+NUM = 1
+
+OUTPUT_FOLDER = ../Scores
+
+INPUT_PATH = ../chr11_matrix_tuple.txt
 
 MODEL_PATH = ../mouse_data_model_scunicorn.npz
 
 DATA_PATH = ../LR/x4/mouse_chr11.png
-
-NUM = 1
-
-INPUT_PATH = ../chr11_matrix_tuple.txt
-
-OUTPUT_FOLDER = ../Scores
 
 #factor used to convert IF into distance = 1 / (IF^factor)
 
