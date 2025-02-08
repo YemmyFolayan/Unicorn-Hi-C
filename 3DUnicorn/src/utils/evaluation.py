@@ -43,10 +43,6 @@ def evaluate_structure(lstCons, structure, n):
             WishDist[count] = dist
             count += 1
 
-    # Display computed distances for debugging
-    #print("Computed Structure Distances (Dist):", Dist[:count])
-    #print("Target Distances (WishDist):", WishDist[:count])
-
     # Calculate RMSE
     SUM /= len(lstCons)
     rmse = np.sqrt(SUM)
@@ -64,9 +60,5 @@ def evaluate_structure(lstCons, structure, n):
     # Calculate Spearman and Pearson correlations with cleaned data
     SpearmanRHO, _ = spearmanr(Dist_clean, WishDist_clean)
     PearsonRHO, _ = pearsonr(Dist_clean, WishDist_clean)
-    
-    # Output correlation values for verification
-    #print(f'\nSpearman correlation = {SpearmanRHO}')
-    #print(f'Pearson correlation = {PearsonRHO}')
 
     return rmse, SpearmanRHO, PearsonRHO, WishDist_clean, Dist_clean
