@@ -45,7 +45,6 @@ def read_input(INPUT_FILE, output_path):
     
     # Number of unique positions
     n = len(pos)
-    print(f'Number of points: {n}')
     
     # Map positions to absolute ids
     mapping = np.zeros((n, 2))
