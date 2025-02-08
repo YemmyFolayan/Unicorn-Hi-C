@@ -10,7 +10,7 @@ DATA_PATH = ../LR/x4/mouse_chr11.png
 
 NUM = 1
 
-TUPLE_PATH (Input file path) = ../chr11_hr_matrix_tuple.txt
+INPUT_PATH = ../chr11_hr_matrix_tuple.txt
 
 OUTPUT_FOLDER = ../Scores
 
