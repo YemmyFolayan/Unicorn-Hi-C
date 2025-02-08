@@ -3,9 +3,9 @@ from scipy.stats import spearmanr, pearsonr
 from utils.convert2xyz import convert2xyz  # This should convert variables to XYZ
 from utils.mat2pdb import mat2pdb  # This should save the XYZ data to PDB format
 
-def output_3DMax(variables, str_name, wish_dist, dist):
+def output_3DUnicorn(variables, str_name, wish_dist, dist):
     """
-    Outputs the 3DMax results, including Spearman and Pearson correlations,
+    Outputs the 3DUnicorn results, including Spearman and Pearson correlations,
     and saves the structure as a scaled .pdb file.
 
     Args:
