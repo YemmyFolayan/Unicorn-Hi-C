@@ -27,7 +27,6 @@ def optimization(n, MAX_ITERATION, LEARNING_RATE, smooth_factor, NEAR_ZERO, lstC
         print("Using provided initial structure.")
         coordinates = initial_structure
     else:
-        print("Generating initial structure using C-style initialization...")
         # Initialize structure using dynamic cube size
         coordinates = initialize_structure_c_style(
             sequence_length=n,  # Number of points
@@ -44,9 +43,6 @@ def optimization(n, MAX_ITERATION, LEARNING_RATE, smooth_factor, NEAR_ZERO, lstC
     # Flatten coordinates for optimization
     variables = coordinates.flatten()
     len_ = len(variables)
-
-    print("Initial structure values in Python (after validation and refinement):")
-    print(variables[:10])  # Display initial values
 
     # Adam optimizer parameters
     beta1, beta2 = 0.9, 0.999
@@ -106,9 +102,6 @@ def optimization(n, MAX_ITERATION, LEARNING_RATE, smooth_factor, NEAR_ZERO, lstC
 
 
 def validate_structure(coordinates, min_dist, max_dist):
-    """
-    Validates if the structure meets SCL-like constraints.
-    """
     for i in range(len(coordinates) - 1):
         dist = np.linalg.norm(coordinates[i + 1] - coordinates[i])
         if dist < min_dist or dist > max_dist:
@@ -117,9 +110,6 @@ def validate_structure(coordinates, min_dist, max_dist):
 
 
 def refine_path_continuity(coordinates, max_step=3):
-    """
-    Ensure path-like continuity by limiting step sizes between nodes.
-    """
     for i in range(1, len(coordinates)):
         step = coordinates[i] - coordinates[i - 1]
         step_norm = np.linalg.norm(step)
