@@ -9,7 +9,7 @@ from optimization.readInput import read_input
 from utils.convert2distance import convert_to_distance
 from utils.evaluation import evaluate_structure
 from optimization.optimization import optimization
-from utils.output_3DMax import output_3DMax
+from utils.output_3DUnicorn import output_3DUnicorn
 from utils.initialize_structure_c_style import initialize_structure_c_style
 
 def load_model(model_path):
@@ -74,7 +74,7 @@ def convert_dense_to_tuple_debug(hic_matrix_normalized, tuple_output_path, bin_s
                     if non_zero_found < 5:
                         non_zero_found += 1
 
-def main_3DMax(params_file):
+def main_3DUnicorn(params_file):
     def parse_parameters_txt(params_file):
         params = {}
         with open(params_file, 'r') as file:
@@ -143,7 +143,7 @@ def main_3DMax(params_file):
                 best_structure_name = f'{name}_CONVERT_FACTOR={CONVERT_FACTOR}_N={l}'
 
             # Output PDB file for this structure
-            output_3DMax(variables, f'{path}{name}_CONVERT_FACTOR={CONVERT_FACTOR}_N={l}', WishDist_clean, Dist_clean)
+            output_3DUnicorn(variables, f'{path}{name}_CONVERT_FACTOR={CONVERT_FACTOR}_N={l}', WishDist_clean, Dist_clean)
 
     # Save additional results as text files
     #np.savetxt(os.path.join(path, f'{name}_spearmancorr.txt'), Corr, fmt='%f', header='Spearman Correlation')
@@ -175,7 +175,7 @@ def main_pipeline(params_file):
 
     hr_image = generate_hr(model_path, data_path)
     convert_image_to_hic(hr_image, tuple_output_path)
-    main_3DMax(params_file)
+    main_3DUnicorn(params_file)
 
 
 if __name__ == "__main__":
