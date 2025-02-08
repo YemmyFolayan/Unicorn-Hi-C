@@ -1,4 +1,5 @@
 import os
+import torch
 import numpy as np
 import argparse
 from PIL import Image
@@ -13,26 +14,53 @@ from utils.output_3DUnicorn import output_3DUnicorn
 from utils.initialize_structure_c_style import initialize_structure_c_style
 
 def load_model(model_path):
-    print(f"[INFO] Loading pre-trained model...")
+    print(f"[INFO] Loading pre-trained model from {model_path}...")
     model_data = np.load(model_path)
     print("[INFO] Model loaded successfully.")
     return model_data
 
-
-def preprocess_input(lr_file):
-    if lr_file.endswith(".png"):
-        lr_image = Image.open(lr_file).convert("RGB")
-        print("[INFO] Preprocessing...")
+def load_hic_matrix(file_path):
+    print(f"[INFO] Loading Hi-C matrix from {file_path}...")
+    if file_path.endswith(".txt"):
+        matrix = np.loadtxt(file_path)
+    elif file_path.endswith((".npz", ".npy")):
+        data = np.load(file_path)
+        matrix = data[list(data.keys())[0]]
     else:
-        raise ValueError("Unsupported file format. Use .png")
-    return lr_image
+        raise ValueError("Unsupported file format. Use .txt, .npz, or .npy")
+    return matrix
 
+def hic_to_image(hic_matrix):
+    hic_matrix = np.log1p(hic_matrix)
+    hic_matrix = (hic_matrix - np.min(hic_matrix)) / (np.max(hic_matrix) - np.min(hic_matrix)) * 255
+    hic_matrix = hic_matrix.astype(np.uint8)
+    return Image.fromarray(hic_matrix)
+
+def image_to_hic(image):
+    matrix = np.array(image, dtype=np.float32)
+    matrix = np.expm1(matrix / 255.0)
+    return matrix
+
+def save_hic_matrix(matrix, output_path, format="txt"):
+    if format == "txt":
+        np.savetxt(output_path, matrix, fmt="%.6f", delimiter="\t")
+    else:
+        np.savez_compressed(output_path, hic=matrix)
+    print(f"[SUCCESS] Hi-C contact map saved")
+
+def preprocess_input(data_path):
+    if data_path.endswith((".txt", ".npz", ".npy")):
+        hic_matrix = load_hic_matrix(data_path)
+        return hic_to_image(hic_matrix), hic_matrix
+    elif data_path.endswith(".png"):
+        return Image.open(data_path).convert("RGB"), None
+    else:
+        raise ValueError("Unsupported file format. Use .png for images or .txt/.npz/.npy for Hi-C contact maps.")
 
 def compute_feature_embeddings(model, lr_image):
     print("[INFO] Extracting feature embeddings from input data...")
     _ = model.get("feature_vectors", None)
     return lr_image
-
 
 def infer_model(model, lr_image):
     print("[INFO] Running inference on input data...")
@@ -40,39 +68,27 @@ def infer_model(model, lr_image):
     hr_image = F.resize(lr_image, (lr_image.height * 4, lr_image.width * 4))
     return hr_image
 
+def convert_dense_to_tuple_debug(input_file, output_file, bin_size=500000):
+    with open(input_file, 'r') as file:
+        lines = file.readlines()
 
-def generate_hr(model_path, data_path):
-    model = load_model(model_path)
-    lr_image = preprocess_input(data_path)
-    hr_image = infer_model(model, lr_image)
-    print(f"[SUCCESS] High-resolution image generated in memory.")
-    return hr_image
-
-
-def convert_image_to_hic(hr_image, tuple_output_path):
-    print("[INFO] Converting HR image to Hi-C matrix in memory...")
-    hr_image_array = np.array(hr_image)
-    image = cv2.cvtColor(hr_image_array, cv2.COLOR_RGB2BGR)
-
-    hic_matrix = image[:, :, 0]
-    hic_matrix_normalized = hic_matrix / 255.0
-
-    # Directly pass the normalized Hi-C matrix to tuple conversion
-    convert_dense_to_tuple_debug(hic_matrix_normalized, tuple_output_path)
-
-def convert_dense_to_tuple_debug(hic_matrix_normalized, tuple_output_path, bin_size=500000):
     non_zero_found = 0
 
-    with open(tuple_output_path, 'w') as out_file:
-        for row_index, row in enumerate(hic_matrix_normalized):
-            for col_index, frequency in enumerate(row):
-                if frequency != 0:
-                    position_1 = (row_index + 1) * bin_size
-                    position_2 = (col_index + 1) * bin_size
-                    out_file.write(f"{position_1} {position_2} {frequency}\n")
-
-                    if non_zero_found < 5:
-                        non_zero_found += 1
+    with open(output_file, 'w') as out_file:
+        for row_index, line in enumerate(lines):
+            values = line.strip().split()
+            for col_index, value in enumerate(values):
+                try:
+                    frequency = float(value)
+                    if frequency != 0:
+                        position_1 = (row_index + 1) * bin_size
+                        position_2 = (col_index + 1) * bin_size
+                        out_file.write(f"{position_1} {position_2} {frequency}\n")
+                        if non_zero_found < 5:
+                            #print(f"Non-zero entry found: {position_1} {position_2} {frequency}")
+                            non_zero_found += 1
+                except ValueError:
+                    print(f"Warning: Could not convert value '{value}' at row {row_index + 1}, col {col_index + 1}")
 
 def main_3DUnicorn(params_file):
     def parse_parameters_txt(params_file):
@@ -89,7 +105,7 @@ def main_3DUnicorn(params_file):
     # Parse parameters
     parameters = parse_parameters_txt(params_file)
     OUTPUT_FOLDER = parameters.get("OUTPUT_FOLDER")
-    INPUT_FILE = parameters.get("INPUT_PATH")
+    INPUT_FILE = parameters.get("OUTPUT_HIC_PATH")
     smooth_factor = 1e-6
     NEAR_ZERO = 0.00001
     NUM = 1
@@ -171,16 +187,23 @@ def main_pipeline(params_file):
 
     model_path = params['MODEL_PATH']
     data_path = params['DATA_PATH']
-    tuple_output_path = params['INPUT_PATH']
+    output_hic_path = params['OUTPUT_HIC_PATH']
 
-    hr_image = generate_hr(model_path, data_path)
-    convert_image_to_hic(hr_image, tuple_output_path)
+    model = load_model(model_path)
+    lr_image, hic_matrix = preprocess_input(data_path)
+    hr_image = infer_model(model, lr_image)
+
+    if hic_matrix is not None:
+        enhanced_hic_matrix = image_to_hic(hr_image)
+        save_hic_matrix(enhanced_hic_matrix, output_hic_path, format='txt')
+        convert_dense_to_tuple_debug(output_hic_path, f"{output_hic_path}_tuple.txt")
+
     main_3DUnicorn(params_file)
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="3D Genome Structure Reconstruction Pipeline")
     parser.add_argument('--parameters', required=True, help="Path to parameters.txt")
     args = parser.parse_args()
     main_pipeline(args.parameters)
+
 
