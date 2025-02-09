@@ -11,6 +11,6 @@
   - Distance matrix conversion  
   - Structure optimization  
   - Output generation  
-- **`Scores/`**: Directory for saving results, including `.pdb` files.  
+- **`src/Scores/`**: Directory for saving results, including `.pdb` files.  
 
 ---
