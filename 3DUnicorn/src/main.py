@@ -189,6 +189,9 @@ def main_pipeline(params_file):
     data_path = params['DATA_PATH']
     output_hic_path = params['INPUT_PATH']
 
+    # Define the output path for the enhanced Hi-C matrix in the Scores folder
+    output_hic_path = os.path.join(scores_folder, f"enhanced_{output_hic_filename}")
+    
     model = load_model(model_path)
     lr_image, hic_matrix = preprocess_input(data_path)
     hr_image = infer_model(model, lr_image)
