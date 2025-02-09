@@ -4,11 +4,19 @@
 
 NUM = 1
 
+#Path to the folder where output results
+
 OUTPUT_FOLDER = ../Scores
+
+#input for the model
 
 INPUT_PATH = ../chr11_matrix_tuple.txt
 
+#Path to the pre-trained model file
+
 MODEL_PATH = ../mouse_data_model_scunicorn.npz
+
+#Raw Hi-C data file 
 
 DATA_PATH = ../mouse_chr11_500kb.txt
 
