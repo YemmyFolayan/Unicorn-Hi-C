@@ -186,9 +186,9 @@ def main_pipeline(params_file):
                 params[key.strip()] = value.strip()
 
     model_path = params['MODEL_PATH']
-    data_path = params['DATA_PATH']
     output_hic_path = params['INPUT_PATH']
 
+    data_path = '../mouse_chr11_500kb.txt'  # Replace with hic data file of any chromosome of respective resoluation
     # Define the output path for the enhanced Hi-C matrix in the Scores folder
     output_hic_path = os.path.join(scores_folder, f"enhanced_{output_hic_filename}")
     
