@@ -16,10 +16,6 @@ INPUT_PATH = ../chr11_matrix_tuple.txt
 
 MODEL_PATH = ../mouse_data_model_scunicorn.npz
 
-#Raw Hi-C data file 
-
-DATA_PATH = ../mouse_chr11_500kb.txt
-
 #factor used to convert IF into distance = 1 / (IF^factor)
 
 CONVERT_FACTOR = 0.5
