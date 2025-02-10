@@ -20,7 +20,6 @@ def load_model(model_path):
     return model_data
 
 def load_hic_matrix(file_path):
-    print(f"[INFO] Loading Hi-C matrix from {file_path}...")
     if file_path.endswith(".txt"):
         matrix = np.loadtxt(file_path)
     elif file_path.endswith((".npz", ".npy")):
@@ -90,7 +89,7 @@ def convert_dense_to_tuple_debug(input_file, output_file, bin_size=500000):
                 except ValueError:
                     print(f"Warning: Could not convert value '{value}' at row {row_index + 1}, col {col_index + 1}")
 
-def main_3DUnicorn(params_file):
+def main_3DUnicorn(params_file, updated_input_path):
     def parse_parameters_txt(params_file):
         params = {}
         with open(params_file, 'r') as file:
@@ -105,7 +104,8 @@ def main_3DUnicorn(params_file):
     # Parse parameters
     parameters = parse_parameters_txt(params_file)
     OUTPUT_FOLDER = parameters.get("OUTPUT_FOLDER")
-    INPUT_FILE = parameters.get("INPUT_PATH")
+    INPUT_FILE = updated_input_path
+
     smooth_factor = 1e-6
     NEAR_ZERO = 0.00001
     NUM = 1
@@ -178,6 +178,7 @@ def main_3DUnicorn(params_file):
     print("Process complete!")
 
 def main_pipeline(params_file):
+    # Parse parameters from the file
     params = {}
     with open(params_file, 'r') as f:
         for line in f:
@@ -186,26 +187,41 @@ def main_pipeline(params_file):
                 params[key.strip()] = value.strip()
 
     model_path = params['MODEL_PATH']
-    output_hic_path = params['INPUT_PATH']
+    input_folder = params['INPUT_PATH']  # Extract input folder from parameters
 
-    data_path = '../mouse_chr11_500kb.txt'  # Replace with hic data file of any chromosome of respective resoluation
+    # Define the input Hi-C data path
+    data_path = '../RAW/mouse_chr11_500kb.txt'  # Replace with hic data file of any chromosome of respective resoluation
+    input_filename = os.path.basename(data_path).replace('.txt', '')
+
     # Define the output path for the enhanced Hi-C matrix in the Scores folder
-    output_hic_path = os.path.join(scores_folder, f"enhanced_{output_hic_filename}")
-    
+    scores_folder = 'Scores'
+    os.makedirs(scores_folder, exist_ok=True)
+    output_hic_path = os.path.join(scores_folder, f"{input_filename}_enhanced.txt")
+
+    # Save the tuple format in the input folder (from parameters)
+    os.makedirs(input_folder, exist_ok=True)
+    tuple_output_path = os.path.join(input_folder, f"{input_filename}_tuple.txt")
+
+    # Load model and preprocess input
     model = load_model(model_path)
     lr_image, hic_matrix = preprocess_input(data_path)
     hr_image = infer_model(model, lr_image)
 
     if hic_matrix is not None:
+        # Save enhanced Hi-C matrix in Scores folder
         enhanced_hic_matrix = image_to_hic(hr_image)
         save_hic_matrix(enhanced_hic_matrix, output_hic_path, format='txt')
-        convert_dense_to_tuple_debug(output_hic_path, f"{output_hic_path}_tuple.txt")
 
-    main_3DUnicorn(params_file)
+        # Convert enhanced matrix to tuple format and save in input folder
+        convert_dense_to_tuple_debug(output_hic_path, tuple_output_path)
+
+    # Pass the updated INPUT_PATH directly to main_3DUnicorn
+    main_3DUnicorn(params_file, tuple_output_path)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="3D Genome Structure Reconstruction Pipeline")
     parser.add_argument('--parameters', required=True, help="Path to parameters.txt")
     args = parser.parse_args()
     main_pipeline(args.parameters)
+
 
