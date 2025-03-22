@@ -5,6 +5,7 @@
 
 ## 📂 Folder Structure  
 
+- **`reproducibility/`**: Folder containing TM-score analysis results for 3DUnicorn vs SCL models.  
 - **`examples/`**: Example input data and configurations for running 3DUnicorn.  
 - **`src/`**: Python source code, including utilities for:  
   - Input processing  
