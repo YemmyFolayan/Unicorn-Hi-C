@@ -19,16 +19,12 @@ def read_input(INPUT_FILE, output_path):
     filename = INPUT_FILE
     cont = np.loadtxt(filename)
     
-    # Check if input is in tuple or square matrix format
+    # Assume input is in tuple format
     if cont.shape[1] == 3:
         print('Input is in Tuple format')
     else:
-        print('Input is in Square Matrix format')
-        cont = np.loadtxt(filename)
-        # Convert to tuple format
-        cont = matrix2tuple(cont)
-        print('Conversion to Tuple Format Done successfully')
-    
+        raise ValueError("Input must be in tuple format with 3 columns: position1, position2, contact_frequency")
+
     pos = []
     
     # Remove zero contacts and NaN, and exclude self-interactions
