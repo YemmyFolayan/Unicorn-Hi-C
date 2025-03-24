@@ -1,5 +1,4 @@
 
-
 #number of structures will be generated
 
 NUM = 1
@@ -33,7 +32,6 @@ VERBOSE = true
 LEARNING_RATE = 0.5
 
 MAX_ITERATION = 2000
-
 
 
 
