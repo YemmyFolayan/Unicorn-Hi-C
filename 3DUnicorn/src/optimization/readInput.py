@@ -47,11 +47,6 @@ def read_input(INPUT_FILE, output_path):
         mapping[i, 0] = pos[i]
         mapping[i, 1] = i + 1  # 1-based index, consistent with MATLAB
     
-    # Save mapping to file
-    fname = os.path.basename(filename).split('.')[0]
-    mapname = os.path.join(output_path, f'{fname}_coordinate_mapping.txt')
-    np.savetxt(mapname, mapping, fmt='%d')
-    
     # Create a mapping dictionary for position to id
     Map = dict(zip(mapping[:, 0], mapping[:, 1]))
     
