@@ -6,15 +6,15 @@ NUM = 1
 
 #Path to the folder where output results
 
-OUTPUT_FOLDER = ../Scores
+OUTPUT_FOLDER = ../src/Scores
 
 #input for the model
 
-INPUT_PATH = ../chr11_matrix_tuple.txt
+INPUT_PATH = ../examples/input/chr11_matrix_tuple.txt
 
 #Path to the pre-trained model file
 
-MODEL_PATH = ../mouse_data_model_scunicorn.npz
+MODEL_PATH = ../examples/model/mouse_data_model_scunicorn.npz
 
 #factor used to convert IF into distance = 1 / (IF^factor)
 
