@@ -4,7 +4,6 @@ import numpy as np
 import argparse
 from PIL import Image
 import subprocess
-import cv2
 import torchvision.transforms.functional as F
 from optimization.readInput import read_input
 from utils.convert2distance import convert_to_distance
@@ -190,7 +189,7 @@ def main_pipeline(params_file):
     input_folder = params['INPUT_PATH']  # Extract input folder from parameters
 
     # Define the input Hi-C data path
-    data_path = '../RAW/mouse_chr11_500kb.txt'  # Replace with hic data file of any chromosome of respective resoluation
+    data_path = '../examples/RAW/Mouse_chr3_500kb.txt'  # Replace with hic data file of any chromosome of respective resoluation
     input_filename = os.path.basename(data_path).replace('.txt', '')
 
     # Define the output path for the enhanced Hi-C matrix in the Scores folder
