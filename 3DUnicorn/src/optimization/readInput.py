@@ -1,6 +1,5 @@
 import numpy as np
 import os
-from utils.matrix2tuple import matrix2tuple
 
 def read_input(INPUT_FILE, output_path):
     """
