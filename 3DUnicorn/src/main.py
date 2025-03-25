@@ -59,10 +59,25 @@ def preprocess_input(data_path):
 
 def infer_model(model, lr_image):
     print("[INFO] Running inference on input data...")
-    with torch.no_grad():
-        # Placeholder - replace with actual model prediction if necessary
-        hr_image = F.resize(lr_image, (lr_image.height * 4, lr_image.width * 4))
-    return hr_image
+
+    print(f"[DEBUG] Input Image Size: {lr_image.width}x{lr_image.height}")
+
+    upscale_factor = 2  # You can change this factor as per your model's training
+
+    # Upscale
+    hr_resized = F.resize(lr_image, (lr_image.height * upscale_factor, lr_image.width * upscale_factor))
+
+    # Crop back to original size
+    left = (hr_resized.width - lr_image.width) // 2
+    top = (hr_resized.height - lr_image.height) // 2
+    right = left + lr_image.width
+    bottom = top + lr_image.height
+
+    hr_cropped = hr_resized.crop((left, top, right, bottom))
+
+    print(f"[DEBUG] Output Image Size: {hr_cropped.width}x{hr_cropped.height}")
+
+    return hr_cropped
 
 def convert_dense_to_tuple_debug(input_file, output_file, bin_size=500000):
     with open(input_file, 'r') as file:
@@ -95,6 +110,8 @@ def main_3DUnicorn(params_file, updated_input_path):
     parameters = parse_parameters_txt(params_file)
     OUTPUT_FOLDER = parameters.get("OUTPUT_FOLDER")
     INPUT_FILE = updated_input_path
+    MAX_ITERATION = int(parameters["MAX_ITERATION"])
+    LEARNING_RATE = float(parameters["LEARNING_RATE"])
 
     path = 'Scores/'
     os.makedirs(path, exist_ok=True)
@@ -103,7 +120,7 @@ def main_3DUnicorn(params_file, updated_input_path):
 
     lstCons, n, _ = read_input(INPUT_FILE, OUTPUT_FOLDER)
 
-    for CONVERT_FACTOR in [0.5]:
+    for CONVERT_FACTOR in [0.6]:
         best_spearman_corr = -1
         best_pearson_corr = -1
         best_structure_name = None
@@ -114,7 +131,7 @@ def main_3DUnicorn(params_file, updated_input_path):
             variables = coordinates.flatten()
 
             variables, _, _ = optimization(
-                n, 2000, 0.5, 1e-6, 1e-5, lstCons, maxIF
+                n, MAX_ITERATION, LEARNING_RATE, 1e-6, 1e-5, lstCons, maxIF
             )
 
             structure = variables.reshape(-1, 3)
@@ -151,8 +168,9 @@ def main_pipeline(params_file):
 
     model_path = params['MODEL_PATH']
     input_folder = params['INPUT_PATH']
+    
 
-    data_path = "../examples/data/mouse_test_data/chr11_500kb.txt"
+    data_path = "../examples/RAW/chr3_500kb.txt"
 
     input_filename = os.path.basename(data_path).replace('.txt', '')
     
