@@ -1,11 +1,25 @@
-## Important Notice
+## 1. Important Notice
 
 Due to GitHub’s file size limitations, the `train.npz`, `valid.npz`, and `test.npz` files could not be uploaded to the repository.  
 You can **download them from Zenodo** using the following link:
 
 [Download ScUnicorn Dataset](https://zenodo.org/uploads/15079331?token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6ImRkYzI5MmQwLTdmYWQtNGIwNi04YWIzLWU4ZmViYzMxNmNlOSIsImRhdGEiOnt9LCJyYW5kb20iOiJlMmI0NmNhYjliNWY5ZjA2N2I5ZThkN2EwMDgzODk3ZCJ9.Ql-dXIRmoFgjZXe4Psw3G-mv_uAmM8bqLrfKhNC92PdoLPgCKEIKaRob73gZrYcNV7hW9Bc3XF_pk6ml8fL22A)
 
-### **Where to Place the Downloaded Files**
+You can also download the dataset using `wget`:
+
+```bash
+wget https://zenodo.org/uploads/15079331?token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6ImRkYzI5MmQwLTdmYWQtNGIwNi04YWIzLWU4ZmViYzMxNmNlOSIsImRhdGEiOnt9LCJyYW5kb20iOiJlMmI0NmNhYjliNWY5ZjA2N2I5ZThkN2EwMDgzODk3ZCJ9.Ql-dXIRmoFgjZXe4Psw3G-mv_uAmM8bqLrfKhNC92PdoLPgCKEIKaRob73gZrYcNV7hW9Bc3XF_pk6ml8fL22A
+```
+
+### 1.0 Navigate to the ScUnicorn Directory
+
+Before proceeding, ensure you are inside the **ScUnicorn** folder:
+
+```bash
+cd ScUnicorn
+```
+
+### 1.1 Downloading the Dataset
 Once downloaded, place the files in the `data/` directory as follows:
 
 ```
@@ -20,9 +34,7 @@ ScUnicorn/
 
 After placing the files correctly, you will get the folder structure as seen below. You can then proceed with the training instructions below.
 
-
-
-## Folder Structure
+## 2. Folder Structure
 ```
 ScUnicorn/
 │
@@ -65,7 +77,7 @@ ScUnicorn/
 ├── README.md                          # Project documentation
 ```
 
-## Training Instructions
+## 3. Training Instructions
 
 To train the ScUnicorn model, navigate to the `scripts/training` directory:
 ```bash
@@ -83,7 +95,7 @@ This command will:
 - Train the model for 50 epochs with a batch size of 64
 - Save the trained model in `checkpoint/scunicorn.pth`
 
-## Inference Instructions
+## 4. Inference Instructions
 
 To run inference using the trained ScUnicorn model, navigate to the `scripts/training` directory:
 ```bash
@@ -100,7 +112,7 @@ This command will:
 - Run inference on test data from `data/test.npz`
 - Save the output predictions in the `output/` directory
 
-## Generating HR Maps
+## 5. Generating HR Maps
 
 To generate high-resolution (HR) Hi-C maps using the trained ScUnicorn model, navigate to the `scripts/` directory:
 ```bash
@@ -118,6 +130,6 @@ This command will:
 - Generate an HR Hi-C map and save it as an image in `output/output.png`
 - Save the HR Hi-C matrix in `output/output.txt`
 
-## Next Steps
+## 6. Next Steps
 
 The `output/output.txt` file generated from the **Generating HR Maps** step can be used in the next stage of **3D Unicorn** for **3D reconstruction**.
