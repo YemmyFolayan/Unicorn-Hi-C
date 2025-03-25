@@ -9,11 +9,11 @@ OUTPUT_FOLDER = ../src/Scores
 
 #input for the model
 
-INPUT_PATH = ../examples/input/chr11_matrix_tuple.txt
+INPUT_FILE = ./../../ScUnicorn/data/mouse_test_data/chr11_500kb.txt
 
 #Path to the pre-trained model file
 
-MODEL_PATH = ../examples/model/scunicorn_model.pytorch
+MODEL_PATH = ./../../ScUnicorn/checkpoint/scunicorn_model.pytorch
 
 #factor used to convert IF into distance = 1 / (IF^factor)
 
