@@ -167,22 +167,25 @@ def main_pipeline(params_file):
                 params[key.strip()] = value.strip()
 
     model_path = params['MODEL_PATH']
-    input_folder = params['INPUT_PATH']
-    
+    input_file = params['INPUT_FILE']
 
-    data_path = "../examples/RAW/chr11_500kb.txt"
+    input_filename = os.path.basename(input_file).replace('.txt', '')
 
-    input_filename = os.path.basename(data_path).replace('.txt', '')
-    
+    # Define paths
     scores_folder = 'Scores'
     os.makedirs(scores_folder, exist_ok=True)
 
     output_hic_path = os.path.join(scores_folder, f"{input_filename}_enhanced.txt")
-    os.makedirs(input_folder, exist_ok=True)
-    tuple_output_path = os.path.join(input_folder, f"{input_filename}_tuple.txt")
 
+    input_folder = "input"
+    tuple_folder = os.path.join(input_folder, "tuple_format_input")
+    os.makedirs(tuple_folder, exist_ok=True)
+
+    tuple_output_path = os.path.join(tuple_folder, f"{input_filename}_tuple.txt")
+
+    # Load model and perform enhancement
     model = load_model(model_path)
-    lr_image, hic_matrix = preprocess_input(data_path)
+    lr_image, hic_matrix = preprocess_input(input_file)
     hr_image = infer_model(model, lr_image)
 
     if hic_matrix is not None:
