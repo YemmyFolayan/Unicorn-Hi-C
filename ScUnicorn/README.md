@@ -1,3 +1,24 @@
+## Setup Instructions
+
+Clone this repository locally using the command:
+```bash
+git clone https://github.com/OluwadareLab/Unicorn.git && cd Unicorn
+```
+
+Pull the ScUnicorn docker image from Docker Hub using the command:
+```bash
+docker pull oluwadarelab/unicorn:latest
+```
+This may take a few minutes. Once finished, check that the image was successfully pulled using:
+```bash
+docker image ls
+```
+
+Run the ScUnicorn container and mount the present working directory to the container using:
+```bash
+docker run --rm --gpus all -it --name scunicorn -v ${PWD}:${PWD} oluwadarelab/unicorn
+```
+
 ## Folder Structure
 ```
 ScUnicorn/
