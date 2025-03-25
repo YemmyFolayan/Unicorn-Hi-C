@@ -170,7 +170,7 @@ def main_pipeline(params_file):
     input_folder = params['INPUT_PATH']
     
 
-    data_path = "../examples/RAW/chr3_500kb.txt"
+    data_path = "../examples/RAW/chr11_500kb.txt"
 
     input_filename = os.path.basename(data_path).replace('.txt', '')
     
