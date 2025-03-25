@@ -152,7 +152,7 @@ def main_pipeline(params_file):
     model_path = params['MODEL_PATH']
     input_folder = params['INPUT_PATH']
 
-    data_path = "../examples/RAW/chr11_100kb.txt"
+    data_path = "../examples/data/mouse_test_data/chr11_500kb.txt"
 
     input_filename = os.path.basename(data_path).replace('.txt', '')
     
