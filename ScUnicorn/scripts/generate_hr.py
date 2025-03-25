@@ -74,8 +74,22 @@ def infer_model(model, lr_image):
     """Perform model-based inference and resolution enhancement."""
     print("[INFO] Running inference on input data...")
     lr_image = compute_feature_embeddings(model, lr_image)
-    hr_image = F.resize(lr_image, (lr_image.height * 4, lr_image.width * 4))
-    return hr_image
+    
+    print(f"[DEBUG] Input Image Size: {lr_image.width}x{lr_image.height}")
+
+    upscale_factor = 2  
+    hr_resized = F.resize(lr_image, (lr_image.height * upscale_factor, lr_image.width * upscale_factor))
+
+    # Crop back to original input size
+    left = (hr_resized.width - lr_image.width) // 2
+    top = (hr_resized.height - lr_image.height) // 2
+    right = left + lr_image.width
+    bottom = top + lr_image.height
+    hr_cropped = hr_resized.crop((left, top, right, bottom))
+
+    print(f"[DEBUG] Output Image Size: {hr_cropped.width}x{hr_cropped.height}")
+
+    return hr_cropped
 
 def save_output(hr_image, output_image_path):
     """Save the enhanced image."""
