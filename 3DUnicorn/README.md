@@ -12,6 +12,7 @@
   - Distance matrix conversion  
   - Structure optimization  
   - Output generation  
-- **`src/Scores/`**: Directory for saving results, including `.pdb` files.  
+- **`src/Scores/`**: Directory for saving results, including `.pdb` files.
+- **`requirements.txt`**: Python dependencies  
 
 ---
