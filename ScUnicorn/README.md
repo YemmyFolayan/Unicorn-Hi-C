@@ -102,3 +102,7 @@ This command will:
 - Use the input Hi-C file `data/mouse_test_data/chr3_100kb.txt`
 - Generate an HR Hi-C map and save it as an image in `output/output.png`
 - Save the HR Hi-C matrix in `output/output.txt`
+
+## Next Steps
+
+The `output/output.txt` file generated from the **Generating HR Maps** step can be used in the next stage of **3D Unicorn** for **3D reconstruction**.
