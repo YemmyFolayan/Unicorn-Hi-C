@@ -8,7 +8,7 @@ Unicorn integrates two powerful subsystems: **ScUnicorn** for super-resolution e
 
 ---
 
-<img src="https://github.com/user-attachments/assets/6673b7cb-3f02-47a6-a45d-a7c9bb7d0c5d" width="250">
+<img src="https://github.com/user-attachments/assets/6673b7cb-3f02-47a6-a45d-a7c9bb7d0c5d" width="400" style="transform: rotate(90deg);">
 
 ---
 ## Documentation
