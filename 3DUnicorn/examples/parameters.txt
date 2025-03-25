@@ -13,7 +13,7 @@ INPUT_PATH = ../examples/input/chr11_matrix_tuple.txt
 
 #Path to the pre-trained model file
 
-MODEL_PATH = ../examples/model/mouse_data_model_scunicorn.npz
+MODEL_PATH = ../examples/model/scunicorn_model.pytorch
 
 #factor used to convert IF into distance = 1 / (IF^factor)
 
