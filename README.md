@@ -1,6 +1,6 @@
 # Unicorn: Enhancing Single-Cell Hi-C Data with Blind Super-Resolution for 3D Genome Structure Reconstruction
 
-UniCorn integrates two powerful subsystems: **ScUnicorn** for super-resolution enhancement of single-cell Hi-C (scHi-C) data and **3DUnicorn** for 3D genome structure reconstruction. This system enables high-resolution chromatin modeling and structural inference from sparse and noisy Hi-C data.
+Unicorn integrates two powerful subsystems: **ScUnicorn** for super-resolution enhancement of single-cell Hi-C (scHi-C) data and **3DUnicorn** for 3D genome structure reconstruction. This system enables high-resolution chromatin modeling and structural inference from sparse and noisy Hi-C data.
 
 ---
 
