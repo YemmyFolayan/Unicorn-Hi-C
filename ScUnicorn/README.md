@@ -67,3 +67,17 @@ This command will:
 - Load the trained model from `checkpoint/scunicorn_model.pytorch`
 - Run inference on test data from `data/test.npz`
 - Save the output predictions in the `output/` directory
+
+## Generating HR Maps
+
+To generate high-resolution (HR) Hi-C maps using the trained ScUnicorn model, navigate to the `scripts/` directory and run:
+
+```bash
+python3 generate_hr.py --model_path ../checkpoint/scunicorn_model.pytorch --data_path ../data/mouse_test_data/chr3_100kb.txt --output_image_path ../output/output.png --output_hic_path ../output/output.txt
+```
+
+This command will:
+- Load the trained model from `checkpoint/scunicorn_model.pytorch`
+- Use the input Hi-C file `data/mouse_test_data/chr3_100kb.txt`
+- Generate an HR Hi-C map and save it as an image in `output/output.png`
+- Save the HR Hi-C matrix in `output/output.txt`
