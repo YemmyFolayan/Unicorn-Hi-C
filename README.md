@@ -4,7 +4,7 @@ Unicorn integrates two powerful subsystems: **ScUnicorn** for super-resolution e
 
 ---
 
-This work will be presented at the ISMB/ECCB 2025 conference in an oral talk during July 20-24, Liverpool, UK.
+This work will be presented at the ISMB/ECCB 2025 conference (July 20-24, 2025) in an oral talk in Liverpool, UK.
 
 ---
 
