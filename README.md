@@ -4,6 +4,10 @@ Unicorn integrates two powerful subsystems: **ScUnicorn** for super-resolution e
 
 ---
 
+This work will be presented at the ISMB/ECCB 2025 conference in an oral talk during July 20-24, Liverpool, UK.
+
+---
+
 [OluwadareLab, University of Colorado, Colorado Springs](https://uccs-bioinformatics.com/)
 
 ---
