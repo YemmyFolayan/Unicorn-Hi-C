@@ -22,7 +22,7 @@ Please see the [wiki](https://github.com/OluwadareLab/Unicorn/wiki) for an exten
 
 ---
 ### Citation
-Chandrashekar, M. B., Menon, R., Olowofila, S., & Oluwadare, O. (2025). Unicorn: Enhancing Single-Cell Hi-C Data with Blind Super-Resolution for 3D Genome Structure Reconstruction. 
+Mohan Kumar B Chandrashekar, Rohit Menon, Samuel Olowofila, Oluwatosin Oluwadare, Unicorn: enhancing single-cell Hi-C data with blind super-resolution for 3D genome structure reconstruction, Bioinformatics, Volume 41, Issue Supplement_1, July 2025, Pages i475–i483, https://doi.org/10.1093/bioinformatics/btaf177
 
 ---
 
