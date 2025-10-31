@@ -1,0 +1,46 @@
+# --------------------------------
+# Python Build & Environment Files
+# --------------------------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.DS_Store
+env/
+venv/
+*.log
+*.bak
+*.tmp
+*.zip
+
+# --------------------------------
+# Project Artifacts & Outputs
+# --------------------------------
+logs/
+checkpoint/
+*.pth
+*.pt
+*.pytorch
+output/
+*.png
+*.jpg
+*.jpeg
+
+# --------------------------------
+# Large Dataset Files
+# --------------------------------
+ScUnicorn/data/train.npz
+ScUnicorn/data/valid.npz
+ScUnicorn/data/test.npz
+
+# Optionally ignore all .npz files in data/
+# ScUnicorn/data/*.npz
+
+# --------------------------------
+# IDE / Editor Settings
+# --------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo

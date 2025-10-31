@@ -1,37 +1,111 @@
-# configs/default_config.yaml
 """
 Default configuration file for the ScUnicorn project.
 Centralizes hyperparameters and settings for training, evaluation, and inference.
 """
 
-# General settings
-device: "cuda"  # Options: "cuda" or "cpu"
+# ------------------------------
+# General Settings
+# ------------------------------
+device: "cuda"           # Options: "cuda" or "cpu"
+seed: 42                 # Random seed for reproducibility
+num_workers: 4           # Data loading workers
 
-# Model parameters
+# ------------------------------
+# Model Parameters
+# ------------------------------
 model:
+  name: "ScUnicorn"
+  base_channels: 64
   kernel_size: 3
   scale_factor: 2
-  input_dim: 8192  # Example: 128x64
-  output_dim: 512
+  use_multimodal: true       # Enables multi-modal integration
+  atac_dim: 256              # Dimension of ATAC-seq vector
+  chip_dim: 256              # Dimension of ChIP-seq vector
+  rna_dim: 512               # Dimension of RNA-seq vector
+  dropout: 0.2
+  activation: "relu"
+  normalization: "batch"     # Options: batch, instance, or none
 
-# Training parameters
+# ------------------------------
+# Training Parameters
+# ------------------------------
 training:
   batch_size: 8
-  epochs: 10
-  learning_rate: 0.001
-  checkpoint_dir: "checkpoints"
+  epochs: 200
+  learning_rate: 0.0001
+  optimizer: "Adam"
+  weight_decay: 0.0001
+  scheduler: "StepLR"
+  step_size: 50
+  gamma: 0.5
+  loss_function: "MSELoss"
+  gradient_clip: 1.0
+  save_frequency: 10
+  checkpoint_dir: "checkpoint/"
+  resume_training: false
+  resume_path: ""
 
-# Evaluation parameters
+# ------------------------------
+# Dataset Parameters
+# ------------------------------
+data:
+  train_lr: "data/train_lr/"         # Directory for low-resolution Hi-C matrices
+  train_hr: "data/train_hr/"         # Directory for high-resolution Hi-C matrices
+  valid_lr: "data/valid_lr/"
+  valid_hr: "data/valid_hr/"
+  test_lr: "data/test_lr/"
+  test_hr: "data/test_hr/"
+
+  # Multi-omics datasets (optional)
+  atac_data: "data/atac_seq/"
+  chip_data: "data/chip_seq/"
+  rna_data: "data/rna_seq/"
+
+  shuffle: true
+  validation_split: 0.1
+  normalize: true
+  augmentation:
+    random_flip: true
+    random_rotate: false
+    noise_std: 0.0
+
+# ------------------------------
+# Evaluation Parameters
+# ------------------------------
 evaluation:
-  batch_size: 8
-  checkpoint_path: "checkpoints/scunicorn_epoch_10.pth"
+  batch_size: 4
+  checkpoint_path: "checkpoint/scunicorn_model.pytorch"
+  metrics:
+    - "PSNR"
+    - "SSIM"
+    - "Pearson"
+    - "MSE"
 
-# Inference parameters
+# ------------------------------
+# Inference Parameters
+# ------------------------------
 inference:
-  lr_file: "data/test_lr.npy"
-  output_file: "data/generated_hr.npy"
+  model_checkpoint: "checkpoint/scunicorn_model.pytorch"
+  hic_input: "data/test_chr3_100kb.npy"
+  atac_input: "data/atac_sample.npz"
+  chip_input: "data/chip_sample.npz"
+  rna_input: "data/rna_sample.npz"
+  output_image: "output/enhanced_chr3.png"
+  output_hic: "output/enhanced_chr3.txt"
+  hic_format: "txt"
 
-# Logging settings
+# ------------------------------
+# Logging and Visualization
+# ------------------------------
 logging:
-  log_dir: "logs"
-  log_name: "scunicorn"
+  log_dir: "logs/"
+  log_name: "scunicorn_training"
+  save_tensorboard: true
+  save_images: true
+  print_frequency: 20
+
+visualization:
+  save_heatmaps: true
+  heatmap_dir: "output/heatmaps/"
+  cmap: "hot"
+  dpi: 300

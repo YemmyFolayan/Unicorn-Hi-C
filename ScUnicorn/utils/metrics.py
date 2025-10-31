@@ -1,62 +1,126 @@
 """
 Metrics Utility for ScUnicorn
-Provides reusable functions to compute evaluation metrics such as MSE and SSIM.
+Extends standard image restoration metrics with biological correlation measures.
+Includes:
+  - Mean Squared Error (MSE)
+  - Structural Similarity Index Measure (SSIM)
+  - Pearson Correlation Coefficient
+  - Spearman Rank Correlation
 """
+
 import torch
 import torch.nn.functional as F
 from skimage.metrics import structural_similarity as ssim
+from scipy.stats import pearsonr, spearmanr
 import numpy as np
 
+
+# -------------------------------------------------------------
+# Standard Image / Reconstruction Metrics
+# -------------------------------------------------------------
 def compute_mse(hr_data, hr_restored):
     """
-    Compute the Mean Squared Error (MSE) between high-resolution data and restored data.
-
-    Parameters:
-    - hr_data (torch.Tensor): Ground truth high-resolution data.
-    - hr_restored (torch.Tensor): Restored high-resolution data from the model.
-
-    Returns:
-    - float: Mean Squared Error value.
+    Compute the Mean Squared Error (MSE) between HR and restored data.
     """
-    mse = F.mse_loss(hr_restored, hr_data, reduction='mean').item()
+    mse = F.mse_loss(hr_restored, hr_data, reduction="mean").item()
     return mse
+
 
 def compute_ssim(hr_data, hr_restored):
     """
-    Compute the Structural Similarity Index Measure (SSIM) between high-resolution data and restored data.
-
-    Parameters:
-    - hr_data (torch.Tensor): Ground truth high-resolution data.
-    - hr_restored (torch.Tensor): Restored high-resolution data from the model.
-
-    Returns:
-    - float: Average SSIM value across all samples in the batch.
+    Compute the Structural Similarity Index (SSIM) between HR and restored data.
     """
     batch_size = hr_data.size(0)
     ssim_values = []
 
     for i in range(batch_size):
-        hr_np = hr_data[i].cpu().numpy().squeeze()
-        restored_np = hr_restored[i].cpu().numpy().squeeze()
-        ssim_value = ssim(hr_np, restored_np, data_range=restored_np.max() - restored_np.min())
-        ssim_values.append(ssim_value)
+        hr_np = hr_data[i].detach().cpu().numpy().squeeze()
+        restored_np = hr_restored[i].detach().cpu().numpy().squeeze()
+        try:
+            ssim_val = ssim(
+                hr_np,
+                restored_np,
+                data_range=restored_np.max() - restored_np.min(),
+            )
+        except ValueError:
+            ssim_val = 0.0
+        ssim_values.append(ssim_val)
 
-    return np.mean(ssim_values)
+    return float(np.mean(ssim_values))
 
+
+# -------------------------------------------------------------
+# Bioinformatics-Specific Correlation Metrics
+# -------------------------------------------------------------
+def compute_pearson(hr_data, hr_restored):
+    """
+    Compute Pearson correlation between flattened HR and restored matrices.
+    Reflects the linear relationship between genomic contact patterns.
+    """
+    hr_np = hr_data.detach().cpu().numpy().reshape(hr_data.size(0), -1)
+    restored_np = hr_restored.detach().cpu().numpy().reshape(hr_restored.size(0), -1)
+
+    pearson_scores = []
+    for i in range(hr_np.shape[0]):
+        try:
+            corr, _ = pearsonr(hr_np[i], restored_np[i])
+        except Exception:
+            corr = 0.0
+        pearson_scores.append(corr)
+
+    return float(np.mean(pearson_scores))
+
+
+def compute_spearman(hr_data, hr_restored):
+    """
+    Compute Spearman rank correlation between HR and restored matrices.
+    Measures monotonic relationship, robust to non-linearities common in Hi-C data.
+    """
+    hr_np = hr_data.detach().cpu().numpy().reshape(hr_data.size(0), -1)
+    restored_np = hr_restored.detach().cpu().numpy().reshape(hr_restored.size(0), -1)
+
+    spearman_scores = []
+    for i in range(hr_np.shape[0]):
+        try:
+            corr, _ = spearmanr(hr_np[i], restored_np[i])
+        except Exception:
+            corr = 0.0
+        spearman_scores.append(corr)
+
+    return float(np.mean(spearman_scores))
+
+
+# -------------------------------------------------------------
+# Combined Metric Summary
+# -------------------------------------------------------------
+def evaluate_all(hr_data, hr_restored):
+    """
+    Compute and return all metrics as a dictionary.
+    Useful for logging or evaluation during training.
+    """
+    metrics = {
+        "MSE": compute_mse(hr_data, hr_restored),
+        "SSIM": compute_ssim(hr_data, hr_restored),
+        "Pearson": compute_pearson(hr_data, hr_restored),
+        "Spearman": compute_spearman(hr_data, hr_restored),
+    }
+    return metrics
+
+
+# -------------------------------------------------------------
+# Test Script
+# -------------------------------------------------------------
 if __name__ == "__main__":
-    # Test the metrics
-    print("Testing metrics utility...")
+    print("Testing metrics utility with multi-modal support...")
 
-    # Create dummy data for testing
-    hr_data = torch.randn(4, 1, 128, 128)  # Batch of 4 HR samples
-    hr_restored = hr_data + torch.randn_like(hr_data) * 0.1  # Add small noise to simulate restoration
+    # Dummy test data
+    hr_data = torch.randn(4, 1, 128, 128)
+    hr_restored = hr_data + torch.randn_like(hr_data) * 0.05
 
-    # Compute MSE and SSIM
-    mse_value = compute_mse(hr_data, hr_restored)
-    ssim_value = compute_ssim(hr_data, hr_restored)
+    # Compute all metrics
+    results = evaluate_all(hr_data, hr_restored)
 
-    # Print results
-    print(f"MSE: {mse_value:.6f}")
-    print(f"SSIM: {ssim_value:.6f}")
+    for k, v in results.items():
+        print(f"{k}: {v:.6f}")
 
-    print("Metrics utility test passed.")
+    print("Metrics utility test passed successfully.")
