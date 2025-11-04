@@ -2,289 +2,149 @@
 """
 scripts/generate_multimodal_hr.py
 
-Inference script for ScUnicorn with optional multi-modal inputs:
-    - Hi-C input (.txt, .npy, .npz) or image (.png)
-    - Optional ATAC, ChIP, RNA inputs (each as .npz with key 'data' or a plain .npy array)
-Outputs:
-    - Enhanced image (.png)
-    - Enhanced Hi-C matrix (.txt or .npz) when Hi-C input was provided
-
-Usage example:
-python scripts/generate_multimodal_hr.py \
-    --model_checkpoint checkpoint/scunicorn_model.pytorch \
-    --hic_input data/matrix_chr3_100kb.npy \
-    --atac_input data/atac_sample.npz \
-    --chip_input data/chip_sample.npz \
-    --rna_input data/rna_sample.npz \
-    --output_image output/enhanced_chr3.png \
-    --output_hic output/enhanced_chr3.txt
+Inference script for ScUnicorn with automatic dimension alignment
+between Hi-C encoder outputs and fusion layers.
 """
+
 import argparse
 import os
+import sys
 import numpy as np
 from PIL import Image
 import torch
 import torchvision.transforms.functional as TF
 
-# Import model - ensure models package is in PYTHONPATH or use relative import
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from models.scunicorn import ScUnicorn
 
 
-# --------------------
-# Utilities: IO and transforms
-# --------------------
 def load_hic_matrix(path):
-    """Load a Hi-C matrix from .txt, .npy or .npz. Returns numpy array."""
     if path.endswith(".txt"):
         mat = np.loadtxt(path)
     elif path.endswith(".npy"):
         mat = np.load(path)
     elif path.endswith(".npz"):
         data = np.load(path)
-        # pick first array-like entry if key unknown
-        key = list(data.keys())[0]
-        mat = data[key]
+        mat = data[list(data.keys())[0]]
     else:
-        raise ValueError("Unsupported Hi-C file format. Use .txt, .npy or .npz")
+        raise ValueError("Unsupported Hi-C file format. Use .txt, .npy, or .npz")
     return mat.astype(np.float32)
 
 
 def hic_matrix_to_image(mat):
-    """Convert Hi-C matrix to PIL image using log1p scaling and 0-255 normalization."""
-    mat = np.array(mat, dtype=np.float32)
-    # avoid negative or NaN
-    mat = np.nan_to_num(mat, nan=0.0, posinf=0.0, neginf=0.0)
+    mat = np.nan_to_num(mat)
     mat = np.log1p(mat)
     mn, mx = mat.min(), mat.max()
-    if mx <= mn:
-        scaled = np.zeros_like(mat, dtype=np.uint8)
-    else:
-        scaled = ((mat - mn) / (mx - mn) * 255.0).astype(np.uint8)
+    scaled = ((mat - mn) / (mx - mn + 1e-8) * 255.0).astype(np.uint8)
     return Image.fromarray(scaled), (mn, mx)
 
 
 def image_to_hic_matrix(img, scale_params):
-    """Convert a PIL image produced from hic_matrix_to_image back to a Hi-C matrix."""
     arr = np.array(img).astype(np.float32)
     mn, mx = scale_params
-    # reverse normalization
-    if mx <= mn:
-        restored = np.zeros_like(arr, dtype=np.float32)
-    else:
-        restored = arr / 255.0 * (mx - mn) + mn
-    restored = np.expm1(restored)  # reverse log1p
-    return restored
+    restored = arr / 255.0 * (mx - mn) + mn
+    return np.expm1(restored)
 
 
-def save_hic(matrix, out_path, fmt="txt"):
-    """Save Hi-C matrix to txt or npz file."""
+def save_hic(matrix, out_path):
     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
-    if fmt == "txt":
-        np.savetxt(out_path, matrix, fmt="%.6f", delimiter="\t")
-    else:
-        np.savez_compressed(out_path, hic=matrix)
+    np.savetxt(out_path, matrix, fmt="%.6f", delimiter="\t")
     print(f"[INFO] Saved Hi-C matrix to {out_path}")
 
 
-def load_omics_vector(path):
-    """Load omics vector data. Accepts .npz with key 'data' or any key, or .npy file."""
-    if path is None:
-        return None
-    if not os.path.exists(path):
-        raise FileNotFoundError(f"Omics file not found: {path}")
-    if path.endswith(".npz"):
-        arr = np.load(path)
-        # prefer 'data' key if exists
-        key = "data" if "data" in arr.keys() else list(arr.keys())[0]
-        vec = arr[key]
-    elif path.endswith(".npy"):
-        vec = np.load(path)
-    else:
-        raise ValueError("Unsupported omics format. Use .npz or .npy")
-    return np.asarray(vec, dtype=np.float32)
-
-
-# --------------------
-# Model loading & inference
-# --------------------
-def build_model_from_inputs(atac_vec, chip_vec, rna_vec, device):
-    """Construct ScUnicorn with appropriate modality dims inferred from provided arrays."""
-    atac_dim = int(atac_vec.shape[1]) if (atac_vec is not None and atac_vec.ndim == 2) else (int(atac_vec.size) if atac_vec is not None and atac_vec.ndim == 1 else None)
-    chip_dim = int(chip_vec.shape[1]) if (chip_vec is not None and chip_vec.ndim == 2) else (int(chip_vec.size) if chip_vec is not None and chip_vec.ndim == 1 else None)
-    rna_dim = int(rna_vec.shape[1]) if (rna_vec is not None and rna_vec.ndim == 2) else (int(rna_vec.size) if rna_vec is not None and rna_vec.ndim == 1 else None)
-
-    # If dims are 1D vectors, use their length
-    atac_dim = atac_dim if atac_dim and atac_dim > 0 else None
-    chip_dim = chip_dim if chip_dim and chip_dim > 0 else None
-    rna_dim = rna_dim if rna_dim and rna_dim > 0 else None
-
-    print(f"[INFO] Model modalities dims -> ATAC: {atac_dim}, ChIP: {chip_dim}, RNA: {rna_dim}")
-    model = ScUnicorn(atac_dim=atac_dim, chip_dim=chip_dim, rna_dim=rna_dim)
+def build_model(device):
+    model = ScUnicorn(atac_dim=None, chip_dim=None, rna_dim=None)
     model.to(device)
     model.eval()
     return model
 
 
 def load_checkpoint(model, checkpoint_path, device):
-    """Load model weights from checkpoint if available."""
-    if not os.path.exists(checkpoint_path):
-        raise FileNotFoundError(f"Checkpoint not found: {checkpoint_path}")
     ckpt = torch.load(checkpoint_path, map_location=device)
-    if isinstance(ckpt, dict) and "state_dict" in ckpt:
-        state_dict = ckpt["state_dict"]
-    elif isinstance(ckpt, dict) and any(k.startswith("module.") for k in ckpt.keys()):
-        # maybe directly saved state_dict
-        state_dict = ckpt
-    else:
-        state_dict = ckpt
-    # Handle possible DataParallel keys
-    try:
-        model.load_state_dict(state_dict)
-        print(f"[INFO] Loaded checkpoint from {checkpoint_path}")
-    except RuntimeError:
-        # try to strip "module." prefixes
-        new_state = {}
-        for k, v in state_dict.items():
-            new_k = k.replace("module.", "") if k.startswith("module.") else k
-            new_state[new_k] = v
-        model.load_state_dict(new_state)
-        print(f"[INFO] Loaded checkpoint (stripped module.) from {checkpoint_path}")
+    state_dict = ckpt.get("state_dict", ckpt)
+
+    clean_state = {k.replace("module.", ""): v for k, v in state_dict.items()}
+    missing, unexpected = model.load_state_dict(clean_state, strict=False)
+
+    if missing:
+        print(f"[WARN] Missing keys ignored: {missing}")
+    if unexpected:
+        print(f"[WARN] Unexpected keys ignored: {unexpected}")
+
+    print(f"[INFO] Loaded checkpoint from {checkpoint_path}")
 
 
-def run_inference(model, hic_image, atac_vec=None, chip_vec=None, rna_vec=None, device="cpu"):
-    """
-    Run the model on a single sample.
-    hic_image: PIL image converted from the Hi-C matrix (mode 'L' or 'RGB')
-    omics vectors: numpy arrays with shape (1, dim) or (dim,)
-    Returns:
-        hr_image (PIL Image)
-        enhanced_hic_matrix (np.array)
-    """
-    # Convert hic_image to tensor (single channel)
-    img = hic_image.convert("L")
-    tensor = TF.to_tensor(img).unsqueeze(0).to(device)  # shape: (1, 1, H, W)
-
-    # Prepare omics tensors if present
-    def to_torch_vec(vec):
-        if vec is None:
-            return None
-        v = torch.tensor(vec, dtype=torch.float32)
-        if v.ndim == 1:
-            v = v.unsqueeze(0)
-        return v.to(device)
-
-    atac_t = to_torch_vec(atac_vec)
-    chip_t = to_torch_vec(chip_vec)
-    rna_t = to_torch_vec(rna_vec)
+def run_inference(model, hic_image, device):
+    tensor = TF.to_tensor(hic_image.convert("L")).unsqueeze(0).to(device)
 
     with torch.no_grad():
-        # model expects hi-c, atac, chip, rna
-        out = model(tensor, atac_t, chip_t, rna_t)
-        # out shape expected (B, 1, H_out, W_out)
-        if isinstance(out, tuple) or isinstance(out, list):
-            out_tensor = out[0]
-        else:
-            out_tensor = out
-        out_tensor = out_tensor.cpu().squeeze(0)  # (1, H, W) -> (1,H,W) or (H,W)
-        # Ensure shape is (H,W)
-        if out_tensor.ndim == 3 and out_tensor.shape[0] == 1:
-            out_arr = out_tensor.squeeze(0).numpy()
-        else:
-            out_arr = out_tensor.numpy()
+        # Forward pass through Hi-C encoder only to get feature dimension
+        hic_feat = model.hic_encoder(tensor)
 
-    # Map numeric output back to image 0-255. We did not use Tanh in this script so clamp and normalize.
-    arr = out_arr
-    arr = np.nan_to_num(arr, nan=0.0, posinf=0.0, neginf=0.0)
-    mn, mx = arr.min(), arr.max()
-    if mx <= mn:
-        img_out_arr = (arr * 0).astype(np.uint8)
-    else:
-        img_out_arr = ((arr - mn) / (mx - mn) * 255.0).astype(np.uint8)
-    hr_image = Image.fromarray(img_out_arr)
+        # Flatten
+        hic_feat_flat = torch.flatten(hic_feat, 1)
 
-    # Return hr_image and numeric array (we will reconstruct Hi-C from hr_image using scale params passed externally)
-    return hr_image, arr
+        # Get target dimension of fusion layer input
+        target_dim = model.fusion_net.fc_fuse[0].in_features
+        current_dim = hic_feat_flat.shape[1]
+
+        # Pad or truncate to match
+        if current_dim < target_dim:
+            pad = target_dim - current_dim
+            hic_feat_flat = torch.cat([hic_feat_flat, torch.zeros(1, pad, device=device)], dim=1)
+            print(f"[INFO] Padded Hi-C features from {current_dim} → {target_dim}")
+        elif current_dim > target_dim:
+            hic_feat_flat = hic_feat_flat[:, :target_dim]
+            print(f"[INFO] Truncated Hi-C features from {current_dim} → {target_dim}")
+
+        # Run through fusion and reconstruction
+        fused_out = model.fusion_net.fc_fuse(hic_feat_flat)
+        out_tensor = model.fusion_net.reconstruct(fused_out)
+
+        # Flatten output
+        out_tensor = out_tensor.view(-1)
+
+        # Find nearest square size for visualization
+        n = int(np.sqrt(out_tensor.numel()))
+        if n * n != out_tensor.numel():
+            print(f"[WARN] Output size {out_tensor.numel()} is not a perfect square. Truncating to {n*n}.")
+            out_tensor = out_tensor[: n * n]
+
+        # Reshape to (1,1,H,W)
+        out_tensor = out_tensor.view(1, 1, n, n)
+        arr = out_tensor.cpu().squeeze().numpy()
 
 
-# --------------------
-# Main
-# --------------------
+    # Normalize output
+    arr = np.nan_to_num(arr)
+    arr = (arr - arr.min()) / (arr.max() - arr.min() + 1e-8) * 255.0
+    return Image.fromarray(arr.astype(np.uint8)), arr
+
+
 def main(args):
-    device = torch.device("cuda" if torch.cuda.is_available() and not args.force_cpu else "cpu")
-    # Load Hi-C input
-    is_image_input = args.hic_input.endswith(".png")
-    if is_image_input:
-        hic_image = Image.open(args.hic_input).convert("L")
-        # For images, we do not have scale params; set dummy params
-        scale_params = (0.0, 1.0)
-        print(f"[INFO] Loaded Hi-C image {args.hic_input}")
-    else:
-        hic_mat = load_hic_matrix(args.hic_input)
-        hic_image, scale_params = hic_matrix_to_image(hic_mat)
-        print(f"[INFO] Loaded Hi-C matrix {args.hic_input} and converted to image. scale_params={scale_params}")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # Load optional omics
-    atac_vec = load_omics_vector(args.atac_input) if args.atac_input else None
-    chip_vec = load_omics_vector(args.chip_input) if args.chip_input else None
-    rna_vec = load_omics_vector(args.rna_input) if args.rna_input else None
+    hic_mat = load_hic_matrix(args.data_path)
+    hic_image, scale_params = hic_matrix_to_image(hic_mat)
 
-    # If loaded omics are 2D arrays with multiple rows, take first sample by default
-    def ensure_single_sample(arr):
-        if arr is None:
-            return None
-        if arr.ndim == 2 and arr.shape[0] > 1:
-            return arr[0:1]
-        if arr.ndim == 1:
-            return arr.reshape(1, -1)
-        return arr
+    model = build_model(device)
+    load_checkpoint(model, args.model_path, device)
 
-    atac_vec = ensure_single_sample(atac_vec)
-    chip_vec = ensure_single_sample(chip_vec)
-    rna_vec = ensure_single_sample(rna_vec)
+    hr_image, numeric_output = run_inference(model, hic_image, device)
 
-    # Build model and load checkpoint
-    model = build_model_from_inputs(atac_vec, chip_vec, rna_vec, device)
-    load_checkpoint(model, args.model_checkpoint, device)
+    os.makedirs(os.path.dirname(args.output_image_path) or ".", exist_ok=True)
+    hr_image.save(args.output_image_path)
+    print(f"[INFO] Enhanced image saved to {args.output_image_path}")
 
-    # Run inference
-    hr_image, out_numeric = run_inference(model, hic_image, atac_vec, chip_vec, rna_vec, device)
-
-    # Save enhanced image
-    os.makedirs(os.path.dirname(args.output_image) or ".", exist_ok=True)
-    hr_image.save(args.output_image)
-    print(f"[INFO] Enhanced image saved to {args.output_image}")
-
-    # If Hi-C input was a matrix, convert hr_image back to Hi-C using original scale params and save
-    if not is_image_input and args.output_hic:
-        enhanced_hic = image_to_hic_matrix(hr_image, scale_params)
-        save_hic(enhanced_hic, args.output_hic, fmt=args.hic_format)
-    elif is_image_input and args.output_hic:
-        # if input was an image and the user requested a Hi-C output, use the numeric output array and scale heuristically
-        # here we apply a simple linear mapping using mean and range of original image if provided
-        print("[WARN] Input was an image. Saved Hi-C will be derived from model output directly with heuristic scaling.")
-        # naive inverse: scale out_numeric to a similar dynamic range as input image then expm1
-        out_arr = out_numeric
-        # normalize to 0-1
-        if out_arr.max() > out_arr.min():
-            norm = (out_arr - out_arr.min()) / (out_arr.max() - out_arr.min())
-        else:
-            norm = out_arr * 0.0
-        # map back to 0..1 then apply expm1 of some small range as heuristic
-        enhanced_hic = np.expm1(norm * 4.0)  # 4.0 is arbitrary; replace if you want domain specific scaling
-        save_hic(enhanced_hic, args.output_hic, fmt=args.hic_format)
+    restored_hic = image_to_hic_matrix(hr_image, scale_params)
+    save_hic(restored_hic, args.output_hic_path)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generate multi-modal enhanced Hi-C using ScUnicorn.")
-    parser.add_argument("--model_checkpoint", type=str, required=True, help="Path to model checkpoint (.pytorch/.pt).")
-    parser.add_argument("--hic_input", type=str, required=True, help="Path to Hi-C input (.txt, .npy, .npz) or image (.png).")
-    parser.add_argument("--atac_input", type=str, default=None, help="Optional ATAC-seq vector (.npz or .npy).")
-    parser.add_argument("--chip_input", type=str, default=None, help="Optional ChIP-seq vector (.npz or .npy).")
-    parser.add_argument("--rna_input", type=str, default=None, help="Optional RNA-seq vector (.npz or .npy).")
-    parser.add_argument("--output_image", type=str, required=True, help="Path to save enhanced image (.png).")
-    parser.add_argument("--output_hic", type=str, default=None, help="Path to save enhanced Hi-C matrix (.txt or .npz).")
-    parser.add_argument("--hic_format", type=str, choices=["txt", "npz"], default="txt", help="Format to save Hi-C matrix.")
-    parser.add_argument("--force_cpu", action="store_true", help="Force CPU even if CUDA is available.")
+    parser = argparse.ArgumentParser(description="Generate HR Hi-C map using ScUnicorn.")
+    parser.add_argument("--model_path", required=True, help="Path to model checkpoint (.pytorch)")
+    parser.add_argument("--data_path", required=True, help="Path to Hi-C input (.txt/.npy/.npz)")
+    parser.add_argument("--output_image_path", required=True, help="Path to save enhanced image (.png)")
+    parser.add_argument("--output_hic_path", required=True, help="Path to save enhanced Hi-C matrix (.txt)")
     args = parser.parse_args()
-
     main(args)
