@@ -124,6 +124,13 @@ run:
 python3 generate_hr.py --model_path ../checkpoint/scunicorn_model.pytorch --data_path ../data/mouse_test_data/chr3_100kb.txt --output_image_path ../output/output.png --output_hic_path ../output/output.txt
 ```
 
+Multimodal Version:
+
+```bash
+python3 generate_multimodal_hr.py --model_path ../checkpoint/scunicorn_model.pytorch --data_path ../data/mouse_test_data/chr3_100kb.txt --output_image_path ../output/output.png --output_hic_path ../output/output.txt
+```
+
+
 This command will:
 - Load the trained model from `checkpoint/scunicorn_model.pytorch`
 - Use the input Hi-C file `data/mouse_test_data/chr3_100kb.txt`
