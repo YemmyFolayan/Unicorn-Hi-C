@@ -166,5 +166,5 @@ docker run --rm -it --name scunicorn -v ${PWD}:${PWD} oluwadarelab/unicorn
 
 To run 3D unicorn
 
-python3 main.py --parameters ../examples/parameters.txt
+python3 main_multimodal.py --parameters ../examples/parameters.txt
 -->

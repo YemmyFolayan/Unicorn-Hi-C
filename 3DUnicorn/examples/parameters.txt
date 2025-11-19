@@ -9,7 +9,13 @@ OUTPUT_FOLDER = ../src/Scores
 
 #input for the model
 
-INPUT_FILE = ./../../ScUnicorn/data/mouse_test_data/chr11_500kb.txt
+
+INPUT_HIC_FILE=./../../ScUnicorn/data/mouse_test_data/chr11_500kb.txt
+ATAC_DATA_PATH=./../../ScUnicorn/data/mouse_test_data/GSE160472_ATAC_Seq.txt
+CHIP_DATA_PATH=./../../ScUnicorn/data/mouse_test_data/GSE269897_CHIP_Seq.txt
+RNA_DATA_PATH=./../../ScUnicorn/data/mouse_test_data/GSE287905_RNA_Seq.txt
+
+
 
 #Path to the pre-trained model file
 
@@ -29,10 +35,7 @@ VERBOSE = true
 
 #if the program fails to generate structures, try to reduce this learning rate
 
-LEARNING_RATE = 0.5
 
-MAX_ITERATION = 2000
-
-
-
+MAX_ITERATION=2000 
+LEARNING_RATE=0.5
 

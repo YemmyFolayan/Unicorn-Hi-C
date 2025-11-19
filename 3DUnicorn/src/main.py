@@ -167,7 +167,7 @@ def main_pipeline(params_file):
                 params[key.strip()] = value.strip()
 
     model_path = params['MODEL_PATH']
-    input_file = params['INPUT_FILE']
+    input_file = params['INPUT_HIC_FILE']
 
     input_filename = os.path.basename(input_file).replace('.txt', '')
 
