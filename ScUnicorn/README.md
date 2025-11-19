@@ -140,3 +140,31 @@ This command will:
 ## 6. Next Steps
 
 The `output/output.txt` file generated from the **Generating HR Maps** step can be used in the next stage of **3D Unicorn** for **3D reconstruction**.
+
+
+
+
+
+<!--
+
+To run multimodal: SCUnicorn > Cd > scripts
+
+python3 generate_multimodal_hr.py \
+--model_path ../checkpoint/scunicorn_model.pytorch \
+--data_path ../data/mouse_test_data/chr3_100kb.txt \
+--atac_data_path ../data/mouse_test_data/GSE160472_ATAC_Seq.txt \
+--chip_data_path ../data/mouse_test_data/GSE269897_CHIP_Seq.txt \
+--rna_data_path ../data/mouse_test_data/GSE287905_RNA_Seq.txt \
+--output_image_path ../output/output.png \
+--output_hic_path ../output/output.txt
+
+
+To run docker
+docker run --rm -it --name scunicorn -v ${PWD}:${PWD} oluwadarelab/unicorn
+
+
+
+To run 3D unicorn
+
+python3 main.py --parameters ../examples/parameters.txt
+-->
