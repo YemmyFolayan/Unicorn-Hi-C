@@ -146,9 +146,10 @@ if __name__ == "__main__":
     # Test the metrics
     print("Testing metrics utility...")
 
-    # Create dummy data for testing
-    hr_data = torch.randn(4, 1, 128, 128)  # Batch of 4 HR samples
-    hr_restored = hr_data + torch.randn_like(hr_data) * 0.1  # Add small noise to simulate restoration
+   # Ensure values are positive, as is typical for Hi-C data
+    hr_data = torch.randn(4, 1, 128, 128).abs()
+    # Add small noise for reconstruction
+    hr_restored = hr_data + torch.randn_like(hr_data)
 
     # Compute MSE and SSIM
     mse_value = compute_mse(hr_data, hr_restored)

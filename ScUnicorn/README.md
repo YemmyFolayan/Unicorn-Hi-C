@@ -167,4 +167,16 @@ docker run --rm -it --name scunicorn -v ${PWD}:${PWD} oluwadarelab/unicorn
 To run 3D unicorn
 
 python3 main_multimodal.py --parameters ../examples/parameters.txt
+
+
+To run Metrics 
+
+
+python3 metrics.py, python3 metrics_multimodal.py
+
+TODO : 
+
+Calculate PSNR, SSIM, Genome Disco, MRE
 -->
+
+

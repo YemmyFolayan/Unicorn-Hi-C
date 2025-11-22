@@ -1,22 +1,42 @@
-"""
-Metrics Utility for ScUnicorn - Optimized Version with PSNR
-Extends standard image restoration metrics with biological correlation measures.
-Includes:
-  - Mean Squared Error (MSE)
-  - Peak Signal-to-Noise Ratio (PSNR)
-  - Structural Similarity Index Measure (SSIM)
-  - Pearson Correlation Coefficient
-  - Spearman Rank Correlation
-
-Optimization focus: Using helper functions for robust data handling and improving 
-robustness against zero-variance data (constant arrays).
-"""
 
 import torch
 import torch.nn.functional as F
 from skimage.metrics import structural_similarity as ssim
 from scipy.stats import pearsonr, spearmanr
 import numpy as np
+
+
+# -------------------------------------------------------------
+# Helper Functions for Data Conversion and Robustness
+# -------------------------------------------------------------
+def _to_numpy_flat(data_tensor):
+    """Converts a batched tensor (B, C, H, W) to a flattened numpy array (B, H*W)."""
+    # Detach from graph, move to CPU, convert to numpy, reshape to (Batch, Features)
+    return data_tensor.detach().cpu().numpy().reshape(data_tensor.size(0), -1)
+
+
+def _safe_correlation(func, x, y):
+    """
+    Computes a correlation function (func) on paired 1D arrays (x, y).
+    Returns 0.0 if the data has zero variance (correlation is undefined).
+    """
+    try:
+        # Check if either array is constant (zero variance)
+        # We use a small tolerance (1e-8) for floating point safety
+        if np.std(x) < 1e-8 or np.std(y) < 1e-8:
+            return 0.0
+        
+        # Compute correlation (scipy returns corr, p-value)
+        corr, _ = func(x, y)
+        
+        # Check for NaN result (can occur on singular data)
+        if np.isnan(corr):
+            return 0.0
+        
+        return corr
+    except Exception:
+        # Catch all other possible exceptions
+        return 0.0
 
 
 # -------------------------------------------------------------
@@ -165,33 +185,8 @@ def evaluate_all(hr_data, hr_restored):
         "MSE": compute_mse(hr_data, hr_restored),    # Mean Squared Error (MSE)
         "PSNR": compute_psnr(hr_data, hr_restored),  # Peak signal-to-noise ratioPeak signal-to-noise 
         "SSIM": compute_ssim(hr_data, hr_restored),  # Structural Similarity Index Measure (SSIM)
-        "Pearson": compute_pearson(hr_data, hr_restored), # 
-        "Spearman": compute_spearman(hr_data, hr_restored),  #
+
     }
     return metrics
 
 
-# -------------------------------------------------------------
-# Test Script
-# -------------------------------------------------------------
-if __name__ == "__main__":
-    print("Testing metrics utility with PSNR...")
-
-    # Dummy test data (Batch size of 4, 1 channel, 128x128 matrix)
-    # Ensure values are positive, as is typical for Hi-C data
-    hr_data = torch.randn(4, 1, 128, 128).abs() + 0.5
-    # Add small noise for reconstruction
-    hr_restored = hr_data + torch.randn_like(hr_data) * 0.05 
-    
-    # Test case for perfect reconstruction (should result in PSNR=100.0)
-    hr_data[0] = 5.0 
-    hr_restored[0] = 5.0 
-
-    # Compute all metrics
-    results = evaluate_all(hr_data, hr_restored)
-
-    print("\n--- Results ---")
-    for k, v in results.items():
-        print(f"{k}: {v:.6f}")
-
-    print("\nMetrics utility test passed successfully.")
