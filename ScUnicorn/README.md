@@ -162,8 +162,6 @@ python3 generate_multimodal_hr.py \
 To run docker
 docker run --rm -it --name scunicorn -v ${PWD}:${PWD} oluwadarelab/unicorn
 
-
-
 To run 3D unicorn
 
 python3 main_multimodal.py --parameters ../examples/parameters.txt
@@ -173,6 +171,14 @@ To run Metrics
 
 
 python3 metrics.py, python3 metrics_multimodal.py
+
+
+To run genomeDisco
+
+genomedisco preprocess --metadata_samples ./ScUnicorn/data/mouse_test_data/chr3_100kb.txt --bins examples/Bins.w50000.bed.gz --outdir ./Research/output/output--parameters_file ./3DUnicorn/examples/parameters.txt
+
+
+
 
 TODO : 
 
